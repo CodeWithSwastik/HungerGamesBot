@@ -1,0 +1,6 @@
+# Secrets
+env
+
+# Python
+**/__pycache__
+
