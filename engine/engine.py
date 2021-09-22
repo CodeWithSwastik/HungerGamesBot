@@ -1,9 +1,9 @@
-from .player import Tribute
+from .player import Player
 
 class Game:
     def __init__(self):
         self.contestants = {}
 
     def add_contestant(self, member):
-        c = Tribute.from_member(member)
+        c = Player.from_member(member)
         self.contestants[c.id] = c

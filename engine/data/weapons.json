@@ -1,0 +1,15 @@
+{
+  "Bare hands": [5, 20],
+  "Axe": [30, 50],
+  "Throwing axe": [40, 50],
+  "Bow and arrow": [30, 70],
+  "Crossbow": [30, 60],
+  "Knife": [20, 50],
+  "Throwing knife": [35, 50],
+  "Mace": [35, 40],
+  "Machete": [30, 45],
+  "Spear": [20, 45],
+  "Diamond Sword": [30, 65],
+  "Trident": [20, 60],
+  "Slingshot": [20, 55]
+}
