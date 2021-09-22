@@ -1,7 +1,7 @@
-import discord
-from discord.mentions import AllowedMentions
-from engine import GameEngine
 import asyncio
+import discord
+
+from engine import GameEngine
 
 class Game:
     """The Class that manages interactions with the Bot"""
