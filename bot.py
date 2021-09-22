@@ -16,8 +16,10 @@ async def on_application_command_error(ctx, error):
     if isinstance(error, discord.errors.ApplicationCommandInvokeError):
         error = error.original
     if isinstance(error, HungerGamesError):
-        return await ctx.reply(error)
-    elif isinstance(error, (commands.CheckFailure, discord.app.errors.CheckFailure)):
+        await ctx.reply(error)
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.reply(error)
+    elif type(error) in (commands.CheckFailure, discord.app.errors.CheckFailure):
         pass
     else:
         await ctx.reply(f'An unknown error occurred: {error}')
@@ -47,6 +49,22 @@ async def register(ctx):
         await ctx.respond("You have registered as tribute. May the odds be ever in your favour.")
     else:
         await ctx.reply("You are already registered as a tribute.")
+
+@bot.slash_command()
+@option('tribute', description="The member to select as a Tribute")
+@game_exists()
+@commands.has_permissions(administrator=True)
+async def add(ctx, tribute: discord.Member):
+    """
+    Register as a tribute for the Hunger Games.
+    """
+
+    game = bot.hunger_games[ctx.guild.id]
+    result = await game.add_contestant(tribute)
+    if result:
+        await ctx.respond(f"{tribute.mention} has been registered as tribute. May the odds be ever in their favour.")
+    else:
+        await ctx.reply(f"{tribute.mention} is already registered as a tribute.")
 
 @bot.slash_command()
 @is_registered()

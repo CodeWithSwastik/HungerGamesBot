@@ -1,8 +1,9 @@
 from discord.ext import commands
+
 def game_exists():
     async def predicate(ctx):
         if ctx.guild.id not in ctx.bot.hunger_games:
-            await ctx.reply("There is no active hunger games on going at the moment in this server.\nPlease ask an administrator to setup a game.")
+            await ctx.reply("There is no active hunger games on going at the moment in this server")
             return False
         return True
     return commands.check(predicate)

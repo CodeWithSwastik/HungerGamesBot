@@ -38,7 +38,8 @@ class HungerGamesBot(commands.Bot):
     async def create_game(self, role):
         for member in role.members:
             await member.remove_roles(role)
-        assert len(role.members) == 0 
+        # assert len(role.members) == 0 
+
         self.hunger_games[role.guild.id] = Game(self, role)
 
 class InteractionContext(ApplicationContext):
