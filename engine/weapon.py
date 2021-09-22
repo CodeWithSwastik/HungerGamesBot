@@ -1,7 +1,7 @@
 import random
 import json
 
-with open("data/weapons.json", "r") as f:
+with open("./engine/data/weapons.json", "r") as f:
     weapons = json.load(f)
 
 for weapon, power in weapons.items():
