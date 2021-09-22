@@ -1,4 +1,5 @@
-from .engine import GameEngine
+import discord
+from engine import GameEngine
 
 class Game:
     """The Class that manages interactions with the Bot"""
@@ -18,4 +19,12 @@ class Game:
         self.engine.add_player(member)
         self.players.append(member)
         await member.add_roles(self.contestant_role)
+        return True
+
+    def create_stats_embed(self, member):
+        embed = discord.Embed(title=f"{member.name}'s stats", color=discord.Color.yellow())
+        return embed
+
+    async def run(self, ctx):
+        self.ctx = ctx
         return True

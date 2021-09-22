@@ -1,11 +1,8 @@
 import discord
 from discord.ext import commands
 from discord.app import option
-from engine import Game
 
-from utils.botbase import HungerGamesBot
-from utils.errors import *
-from utils.checks import *
+from utils import *
 
 from config import Config
 
@@ -43,7 +40,7 @@ async def register(ctx):
     Register as a tribute for the Hunger Games.
     """
 
-    game = bot.hunger_games[ctx.guild.id]
+    game = bot.get_game(ctx)
     result = await game.add_contestant(ctx.author)
     if result:
         await ctx.respond("You have registered as tribute. May the odds be ever in your favour.")
@@ -59,7 +56,7 @@ async def add(ctx, tribute: discord.Member):
     Register as a tribute for the Hunger Games.
     """
 
-    game = bot.hunger_games[ctx.guild.id]
+    game = bot.get_game(ctx)
     result = await game.add_contestant(tribute)
     if result:
         await ctx.respond(f"{tribute.mention} has been registered as tribute. May the odds be ever in their favour.")
@@ -70,3 +67,20 @@ async def add(ctx, tribute: discord.Member):
 @is_registered()
 async def inventory(ctx):
     await ctx.reply('Your inventory is empty')
+
+@bot.slash_command()
+async def map(ctx):
+    """
+    Shows the map of the Hunger Games Arena.
+    """
+    await ctx.respond("Here's the map of the Hunger Games Arena")
+    await ctx.send(file=discord.File('map.png'))
+
+@bot.slash_command()
+@is_registered()
+async def stats(ctx):
+    """
+    Shows your stats if you are a Tribute.
+    """
+    embed = bot.get_game(ctx).create_stats_embed(ctx.author)
+    await ctx.reply(embed=embed)

@@ -1,5 +1,5 @@
 from .weapon import Weapon
-
+import random
 
 class Player:
     def __init__(self, name, id):
@@ -10,6 +10,7 @@ class Player:
         self.health = 100
         self.hunger = 0
         self.thirst = 0
+        self.strength = random.randint(70, 100)
 
         # Extra
         self.weapons: list[Weapon] = []

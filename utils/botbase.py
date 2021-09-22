@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord.app import ApplicationContext
 
-from engine import Game
+from .game import Game
 
 class HungerGamesBot(commands.Bot):
     def __init__(self, config):
@@ -41,6 +41,9 @@ class HungerGamesBot(commands.Bot):
         # assert len(role.members) == 0 
 
         self.hunger_games[role.guild.id] = Game(self, role)
+
+    def get_game(self, ctx) -> Game:
+        return self.hunger_games.get(ctx.guild.id)
 
 class InteractionContext(ApplicationContext):
     def reply(self, *args, **kwargs):
