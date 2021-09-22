@@ -41,6 +41,9 @@ async def register(ctx):
     """
 
     game = bot.get_game(ctx)
+    if game.running:
+        return await ctx.reply(f"A game is already running in {ctx.channel.mention}, please wait for it to finish before registering.")
+
     result = await game.add_contestant(ctx.author)
     if result:
         await ctx.respond("You have registered as tribute. May the odds be ever in your favour.")
@@ -57,7 +60,11 @@ async def add(ctx, tribute: discord.Member):
     """
 
     game = bot.get_game(ctx)
+    if game.running:
+        return await ctx.reply(f"A game is already running in {ctx.channel.mention}, please wait for it to finish before trying to add a tribute.")
+
     result = await game.add_contestant(tribute)
+
     if result:
         await ctx.respond(f"{tribute.mention} has been registered as tribute. May the odds be ever in their favour.")
     else:
@@ -68,7 +75,11 @@ async def add(ctx, tribute: discord.Member):
 @commands.has_permissions(administrator=True)
 async def start(ctx):
     """Starts the Hunger Games in the channel the command is run."""
-    await bot.get_game(ctx).run(ctx)
+    game = bot.get_game(ctx)
+    if game.running:
+        return await ctx.reply(f"The game is already running in {ctx.channel.mention}, please wait for it to finish before trying to start it.")
+
+    await game.run(ctx)
 
 
 @bot.slash_command()
@@ -96,3 +107,16 @@ async def stats(ctx):
 @bot.command()
 async def source(ctx):
     await ctx.send('https://github.com/CodeWithSwastik/HungerGamesBot')
+
+tribute = bot.command_group('tribute', 'Commands related to Tributes')
+
+@tribute.command(name='list')
+@game_exists()
+async def list_(ctx):
+    """
+    Lists all tributes
+    """
+    embed = bot.get_game(ctx).create_tributes_embed()
+    await ctx.reply(embed=embed)
+
+

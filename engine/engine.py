@@ -12,6 +12,6 @@ class GameEngine:
         self.players[c.id] = c
 
     def setup(self):
-        for player in self.players:
+        for player in self.players.values():
             player.location = self.arena[5]
             self.arena[5].players.append(player)
