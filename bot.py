@@ -1,35 +1,35 @@
 import discord
-import jishaku
 from discord.ext import commands
-
-import os
 
 from config import Config
 
-config = Config()
 
-# Configuring intents
-intents = discord.Intents.none()
-intents.guilds = True
-intents.members = True
-intents.messages = True
-intents.reactions = True
+class HungerGamesBot(commands.Bot):
+    def __init__(self):
+        self.config = Config()
+        super().__init__(
+            command_prefix=self.config.default_prefix,
+            case_insensitive=True,
+            description="The Hunger Games bot",
+            allowed_mentions=discord.AllowedMentions(roles=False, users=True, everyone=False),
+            intents=discord.Intents.all(),
+            activity=discord.Activity(
+                type=discord.ActivityType.watching, name="people kill each other"
+            ),
+        )
 
-bot = commands.Bot(
-    command_prefix=config.default_prefix,
-    case_insensitive=True,
-    description="The Hunger Games bot",
-    allowed_mentions=discord.AllowedMentions(roles=False, users=True, everyone=False),
-    intents=intents
-)
+        self.load_extension('jishaku')
 
-# Loading cogs
-for file in os.listdir("cogs"):
-    if file.endswith(".py"):
-        name = file[:-3]
-        bot.load_extension(f"cogs.{name}")
+    def run(self):
+        super().run(self.config.bot_token)
 
-bot.load_extension("jishaku")
+bot = HungerGamesBot()
 
-if __name__ == "__main__":
-    bot.run(config.bot_token)
+@bot.event
+async def on_ready():
+    print(f'Hunger Games Bot v{bot.config.version} is ready')
+    print(f'Logged in as {bot.user}')
+
+@bot.slash_command()
+async def info(ctx):
+    await ctx.respond('Hello')
