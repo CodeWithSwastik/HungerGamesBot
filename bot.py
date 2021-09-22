@@ -64,6 +64,14 @@ async def add(ctx, tribute: discord.Member):
         await ctx.reply(f"{tribute.mention} is already registered as a tribute.")
 
 @bot.slash_command()
+@game_exists()
+@commands.has_permissions(administrator=True)
+async def start(ctx):
+    """Starts the Hunger Games in the channel the command is run."""
+    await bot.get_game(ctx).run(ctx)
+
+
+@bot.slash_command()
 @is_registered()
 async def inventory(ctx):
     await ctx.reply('Your inventory is empty')
@@ -84,3 +92,7 @@ async def stats(ctx):
     """
     embed = bot.get_game(ctx).create_stats_embed(ctx.author)
     await ctx.reply(embed=embed)
+
+@bot.command()
+async def source(ctx):
+    await ctx.send('https://github.com/CodeWithSwastik/HungerGamesBot')

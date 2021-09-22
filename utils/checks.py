@@ -13,7 +13,18 @@ def is_registered():
     async def predicate(ctx):
         if not await original(ctx):
             return False
-        if ctx.author not in ctx.bot.hunger_games[ctx.guild.id].players:
+        if ctx.author not in ctx.bot.get_game(ctx).players:
+            await ctx.reply("You can't use this since you haven't registered as a tribute")
+            return False
+        return True
+    return commands.check(predicate)
+        
+def not_running():
+    original = game_exists().predicate
+    async def predicate(ctx):
+        if not await original(ctx):
+            return False
+        if ctx.bot.get_game(ctx).players:
             await ctx.reply("You can't use this since you haven't registered as a tribute")
             return False
         return True
