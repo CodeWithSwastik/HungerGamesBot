@@ -36,3 +36,4 @@ class HungerGamesBot(commands.Bot):
             await member.remove_roles(role)
         assert len(role.members) == 0 
         self.hunger_games[role.guild.id] = Game(self, role)
+
