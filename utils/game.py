@@ -105,7 +105,6 @@ class SelectOption(discord.ui.View):
         self.select.callback = self.select_callback
         self.add_item(self.select)
         self.game = game
-        print('?')
 
     async def select_callback(self, interaction):
         await interaction.response.send_message(f'mhm cats: {self.select.values[0]}', ephemeral=True)
