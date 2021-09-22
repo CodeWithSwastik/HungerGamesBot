@@ -16,11 +16,11 @@ async def on_application_command_error(ctx, error):
     if isinstance(error, discord.errors.ApplicationCommandInvokeError):
         error = error.original
     if isinstance(error, HungerGamesError):
-        return await ctx.respond(error, ephemeral=True)
+        return await ctx.reply(error)
     elif isinstance(error, (commands.CheckFailure, discord.app.errors.CheckFailure)):
         pass
     else:
-        await ctx.respond(f'An unknown error occurred: {error}', ephemeral=True)
+        await ctx.reply(f'An unknown error occurred: {error}')
         raise error
 
 @bot.slash_command()
@@ -32,7 +32,7 @@ async def setup(ctx, role: discord.Role):
     """
     role = role or discord.utils.get(ctx.guild.roles, name='Contestant')
     await bot.create_game(role)
-    await ctx.respond("Hello admin, I have created an instance of the Hunger games for your server.")
+    await ctx.respond("I have created an instance of the Hunger games for your server.\nPeople can now `/register` or you can add them using `/add tribute`")
 
 @bot.slash_command()
 @game_exists()
@@ -46,9 +46,9 @@ async def register(ctx):
     if result:
         await ctx.respond("You have registered as tribute. May the odds be ever in your favour.")
     else:
-        await ctx.respond("You are already registered as a tribute.", ephemeral=True)
+        await ctx.reply("You are already registered as a tribute.")
 
 @bot.slash_command()
 @is_registered()
 async def inventory(ctx):
-    await ctx.respond('Your inventory is empty', ephemeral=True)
+    await ctx.reply('Your inventory is empty')
