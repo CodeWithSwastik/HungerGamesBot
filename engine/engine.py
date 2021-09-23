@@ -5,7 +5,7 @@ class GameEngine:
     """The Internal Game Engine"""
     def __init__(self):
         self.players = {}
-        self.arena = Arena()
+        self.arena = Arena(self)
         self.current_day = None
 
         self.prompts = {}

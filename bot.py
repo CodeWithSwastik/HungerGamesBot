@@ -31,13 +31,13 @@ async def setup(ctx, role: discord.Role):
     """
     role = role or discord.utils.get(ctx.guild.roles, name='Contestant')
     await bot.create_game(role)
-    await ctx.respond("I have created an instance of the Hunger games for your server.\nPeople can now `/register` or you can add them using `/add tribute`")
+    await ctx.respond("I have created an instance of the Hunger games for your server.\nPeople can now `/volunteer` or you can add them using `/add tribute`")
 
 @bot.slash_command()
 @game_exists()
-async def register(ctx):
+async def volunteer(ctx):
     """
-    Register as a tribute for the Hunger Games.
+    Volunteer as a tribute for the Hunger Games.
     """
 
     game = bot.get_game(ctx)
@@ -46,9 +46,9 @@ async def register(ctx):
 
     result = await game.add_contestant(ctx.author)
     if result:
-        await ctx.respond("You have registered as tribute. May the odds be ever in your favour.")
+        await ctx.respond("You have volunteered as tribute. May the odds be ever in your favour.")
     else:
-        await ctx.reply("You are already registered as a tribute.")
+        await ctx.reply("You are already selected as a tribute.")
 
 @bot.slash_command()
 @option('tribute', description="The member to select as a Tribute")
@@ -56,7 +56,7 @@ async def register(ctx):
 @commands.has_permissions(administrator=True)
 async def add(ctx, tribute: discord.Member):
     """
-    Register as a tribute for the Hunger Games.
+    Select a tribute for the Hunger Games.
     """
 
     game = bot.get_game(ctx)
@@ -99,7 +99,7 @@ async def map(ctx):
 @is_registered()
 async def stats(ctx):
     """
-    Shows your stats if you are a Tribute.
+    Shows your stats if you are a tribute.
     """
     embed = bot.get_game(ctx).create_stats_embed(ctx.author)
     await ctx.reply(embed=embed)

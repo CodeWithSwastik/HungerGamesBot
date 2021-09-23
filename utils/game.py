@@ -1,7 +1,7 @@
 import asyncio
 import discord
 
-from engine import GameEngine
+from engine import GameEngine, Prompt
 
 class Game:
     """The Class that manages interactions with the Bot"""
@@ -74,7 +74,7 @@ class Game:
         view = StartButton(self)
         await self.ctx.send(f'Day {day} begins. Press the red button to begin.', view=view)
         await self.progress_day()
-        
+
     async def end_day(self):
         # Winner needs to be checked here 
         
@@ -88,6 +88,20 @@ class Game:
 
         await self.end_day()
 
+    def prompt_to_view(self, prompt: Prompt) -> discord.ui.View:
+        if prompt.type == 1:
+            pass # TODO
+        else:
+            return SelectOption(self, [str(s) for s in prompt.responses])
+
+    def get_prompt(self, member):
+        return self.engine.players[member.id].get_prompt()
+
+    async def handle_response(self, interaction, response):
+        self.engine.players[interaction.user.id].add_response(response)
+        await interaction.response.edit_message(content='yeah boi')
+        # TODO
+
 class StartButton(discord.ui.View):
     def __init__(self, game):
         super().__init__()
@@ -96,9 +110,10 @@ class StartButton(discord.ui.View):
     @discord.ui.button(emoji='<:hunger_games_salute:890277338263224340>', style=discord.ButtonStyle.red)
     async def button_callback(self, button, interaction):
         e = self.game.engine.current_day
+        r = self.game.get_prompt(interaction.user)
         await interaction.response.send_message(
-            f"haha yes wait what. Current Time: {e} {e.time}",
-            view=SelectOption('hehe','uwu'),
+            f"{r}. Current Time: {e} {e.time}",
+            view=self.game.prompt_to_view(r),
             ephemeral=True
         )
 
@@ -112,7 +127,7 @@ class StartButton(discord.ui.View):
         return True
 
 class SelectOption(discord.ui.View):
-    def __init__(self, game, *options):
+    def __init__(self, game, options):
         super().__init__()
         final_options = []
         for option in options:
@@ -121,10 +136,15 @@ class SelectOption(discord.ui.View):
             else:
                 final_options.append(discord.SelectOption(label=option[0], emoji=option[1]))
 
-        self.select = discord.ui.Select(options=final_options)
+        self.select = discord.ui.Select(placeholder='What will you do?', options=final_options)
         self.select.callback = self.select_callback
         self.add_item(self.select)
         self.game = game
 
     async def select_callback(self, interaction):
-        await interaction.response.send_message(f'mhm cats: {self.select.values[0]}', ephemeral=True)
+        await self.game.handle_response(interaction, self.select.values[0])
+
+
+
+
+    

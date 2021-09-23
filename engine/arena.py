@@ -1,10 +1,13 @@
+from .prompts import Prompt
+
 class Arena:
-    def __init__(self):
+    def __init__(self, game):
         self.sections = [
-            Snow(), Mountains(), Savanah(),
-            Forest(), Cornucopia(), Plains(),
-            RainForest(), Grassland(), Desert()
+            Snow(game), Mountains(game), Savanah(game),
+            Forest(game), Cornucopia(game), Plains(game),
+            RainForest(game), Grassland(game), Desert(game)
         ]
+        
 
     def __getitem__(self, id):
         if id < 1 or id > len(self.sections):
@@ -16,11 +19,15 @@ class Section:
     id: int
     neighbours: list
 
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.players = []
 
     def __repr__(self):
         return self.__class__.__name__
+
+    def get_prompt(self, player) -> Prompt:
+        return Prompt(f'lmao {player.name}', ['sad', 'e'])
 
 class Snow(Section):
     id = 1
