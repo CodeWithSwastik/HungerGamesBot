@@ -137,7 +137,7 @@ class Game:
         if prompt.type == 1:
             pass # TODO
         else:
-            return SelectOption(self, [str(s) for s in prompt.responses])
+            return SelectOption(self, str(prompt), [str(s) for s in prompt.responses])
 
     def get_prompt(self, member):
         return self.engine.players[member.id].get_prompt()
@@ -160,16 +160,16 @@ class Game:
             )
             await self.ctx.send(embed=embed)
         
-        await interaction.response.edit_message(
-            content=result.message, view = None
-        )
-
         if result.followup:
-            if result.followup.delay:
-                await asyncio.sleep(result.followup.delay)
+            # if result.followup.delay:
+            #     await asyncio.sleep(result.followup.delay)
             await interaction.response.edit_message(
-                content=result.followup.display_text,
+                content=result.message,
                 view = self.prompt_to_view(result.followup)
+            )
+        else:
+            await interaction.response.edit_message(
+                content=result.message, view = None
             )
             
         # TODO
@@ -202,7 +202,7 @@ class StartButton(discord.ui.View):
         return True
 
 class SelectOption(discord.ui.View):
-    def __init__(self, game, options):
+    def __init__(self, game, placeholder, options):
         super().__init__()
         final_options = []
         for i, option in enumerate(options):
@@ -214,7 +214,7 @@ class SelectOption(discord.ui.View):
                         label=option[0], emoji=option[1], value=i
                     ))
 
-        self.select = discord.ui.Select(placeholder='What will you do?', options=final_options)
+        self.select = discord.ui.Select(placeholder=placeholder or 'What will you do?', options=final_options)
         self.select.callback = self.select_callback
         self.add_item(self.select)
         self.game = game

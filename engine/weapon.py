@@ -9,12 +9,15 @@ for weapon, power in weapons.items():
 
 
 class Weapon:
-    def __init__(self, name, level):
+    def __init__(self, name, emoji, level, power = None):
         self.name = name
+        self.emoji = emoji
         self.level = level
-        self.power = weapons[self.name]
+        self.power = power or weapons.get(self.name, 60)
 
     def upgrade(self):
         self.level += 1
         self.power *= self.level
         self.power += random.randrange(-10, 10)
+
+    

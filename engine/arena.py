@@ -64,10 +64,11 @@ class Cornucopia(Section):
         def enter():
             resp = ActionResponse(
                 f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
-                public=Message(f'{player.name} bravely enters the Cornucopia.')
+                public=Message(f'{player.name} bravely enters the Cornucopia.'),
+                followup=self.generate_weapon_prompt(player)
             )
             self.cornucopia.append(player)
-            player.finished_responding = True
+            #player.finished_responding = True
             return resp
 
         def run():
@@ -96,18 +97,30 @@ class Cornucopia(Section):
             Response(
                 'Enter the Cornucopia', 
                 action=enter, 
-                id=0
             ), 
             Response(
                 'Run away', 
                 action=run, 
-                id=1
             )
         ]
 
         
         return Prompt('Do you enter the Cornucopia?', responses)
 
+    def generate_weapon_prompt(self, player):
+        responses = [
+            Response(
+                'Dagger', 
+                action=lambda: ActionResponse('ok'), 
+            ), 
+            Response(
+                'Your mom', 
+                action=lambda: ActionResponse('lmao'), 
+            )
+        ]
+        p = Prompt('Which weapon do you pick?', responses, delay=2)
+        player.prompt = p
+        return p
 
 class Plains(Section):
     id = 6
