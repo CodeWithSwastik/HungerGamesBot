@@ -16,12 +16,13 @@ class Player:
         self.location = None 
         self.weapons: list[Weapon] = []
         self.killed = []
-        self.killed_by = None
+        self.reason_of_death = None
 
         # Runtime
         self.responses:int = 0
         self.response = None
         self.prompt = None
+        self.finished_responding = False
 
     @classmethod
     def from_member(cls, member):
@@ -33,7 +34,7 @@ class Player:
             self.health <= 0,
             self.hunger > 100, 
             self.thirst > 100, 
-            self.killed_by is not None
+            self.reason_of_death is not None
         ])
 
     @property
@@ -47,6 +48,7 @@ class Player:
         self.responses = 0
         self.response = None
         self.prompt = None        
+        self.finished_responding = False
     
     def add_response(self, response):
         self.responses += 1
@@ -57,3 +59,6 @@ class Player:
         self.prompt = self.location.get_prompt(self)
         return self.prompt
 
+    def kill(self, reason):
+        self.health = 0
+        self.reason_of_death = reason

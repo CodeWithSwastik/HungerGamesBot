@@ -13,6 +13,7 @@ class Game:
 
 
         self.engine = GameEngine()
+        self.engine.on_player_death = self.on_player_death
         self.players = []
         self.running = False
     
@@ -23,6 +24,9 @@ class Game:
         self.players.append(member)
         await member.add_roles(self.contestant_role)
         return True
+
+    def get_member(self, player) -> discord.Member:
+        return discord.utils.get(self.players, id=player.id)
 
     def create_stats_embed(self, member):
         embed = discord.Embed(title=f"{member.name}'s stats", color=discord.Color.yellow())
@@ -74,8 +78,10 @@ class Game:
         
         for day in range(1):
             await self.start_day(day)
-        self.running = False
-        self.bot.end_game(self.guild)
+
+        if self.running:
+            self.running = False
+            self.bot.end_game(self.guild)
 
     async def start_day(self, day):
         self.interactions = {}
@@ -86,14 +92,43 @@ class Game:
         await self.progress_day()
 
     async def end_day(self):
-        # Winner needs to be checked here 
-        
-        await self.ctx.send(f'Day {self.engine.current_day.date} ends. These people died today. The next day will begin soon!', embed=self.create_tributes_embed())
+        embed = discord.Embed(title=f'Day {self.engine.current_day.date} ends', color=discord.Color.red())
+        embed.description = "Fallen Tributes:\n"
+        embed.description += "\n".join(
+            [f"<@{p.id}>," for p in self.engine.current_day.killed]
+        )
         self.engine.end_day()
+        await self.ctx.send(embed=embed)
+
+        if self.engine.finished:
+            if self.engine.winner is not None:
+                winner = self.get_member(self.engine.winner)
+                embed = self.get_embed_for(
+                    winner,
+                    title=f'We have a winner!', 
+                    description=f'{winner.mention} has won the Hunger Games!',
+                    color=discord.Color.yellow(),
+                )
+            else:
+                embed = discord.Embed(
+                    title=f'No one won :(', 
+                    color=discord.Color.red()
+                )               
+            await self.ctx.send(embed=embed)
+            await asyncio.sleep(15)
+            self.running = False
+            self.bot.end_game(self.guild)
+
+
+    def get_embed_for(self, member, **kwargs):
+        embed = discord.Embed(**kwargs)
+        embed.set_thumbnail(url=member.display_avatar.url)        
+        return embed
 
     async def progress_day(self):
         for _ in range(self.engine.current_day.length):
-            self.engine.progress_day(60)
+            if not self.engine.progress_day(60): 
+                break # day ended early since everyone responded
             await asyncio.sleep(15)
 
         await self.end_day()
@@ -106,6 +141,12 @@ class Game:
 
     def get_prompt(self, member):
         return self.engine.players[member.id].get_prompt()
+
+    def on_player_death(self, player, reason):
+        member = self.get_member(player)
+        async def inner():
+            await member.remove_roles(self.contestant_role)    
+        asyncio.create_task(inner())
 
     async def handle_response(self, interaction, response):
         self.interactions[interaction.user.id] = interaction
@@ -122,16 +163,15 @@ class Game:
         await interaction.response.edit_message(
             content=result.message, view = None
         )
-        # r = self.game.get_prompt(interaction.user)
-        # if r is None:
-        #     await interaction.response.edit_message(
-        #         content=result.message, view = None
-        #     )
-            
-        # await interaction.response.edit_message(
-        #     content=result.message, view = self.prompt_to_view(r)
-        # )
 
+        if result.followup:
+            if result.followup.delay:
+                await asyncio.sleep(result.followup.delay)
+            await interaction.response.edit_message(
+                content=result.followup.display_text,
+                view = self.prompt_to_view(result.followup)
+            )
+            
         # TODO
 
 class StartButton(discord.ui.View):
@@ -144,7 +184,7 @@ class StartButton(discord.ui.View):
         e = self.game.engine.current_day
         r = self.game.get_prompt(interaction.user)
         await interaction.response.send_message(
-            f"{r}. Current Time: {e} {e.time}",
+            f"{r}, Current Time: {e}",
             view=self.game.prompt_to_view(r),
             ephemeral=True
         )

@@ -1,30 +1,33 @@
 from dataclasses import dataclass
 from typing import Callable
 
+@dataclass
 class Prompt:
-    def __init__(self, display_text, responses, type = 2):
-        """
-        type: 1 (Yes/No)
-              2 (Multiple choice)
-        """
-        self.type = type
-        self.display_text = display_text
-        self.responses = responses
-    
+    """
+    type:   1 (Yes/No)
+            2 (Multiple choice)
+            3 (Battle)
+    """
+    display_text: str
+    responses: list
+    type: int = 2
+    delay: int = None
+
     def __str__(self):
         return self.display_text
         
-@dataclass()
+@dataclass
 class Message:
     description: str = None 
     color: int = None       
 
-@dataclass()
+@dataclass
 class ActionResponse:
     message: str
     public: Message = None
+    followup: Prompt = None
 
-@dataclass()
+@dataclass
 class Response:
     display_text: str
     action: Callable[..., ActionResponse]

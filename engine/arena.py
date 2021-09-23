@@ -1,3 +1,4 @@
+import random
 from .prompts import Prompt, Response, ActionResponse, Message
 
 class Arena:
@@ -14,6 +15,10 @@ class Arena:
             raise ValueError('Invalid section.')
         return self.sections[id-1]
 
+    def move_player(player, section):
+        player.location.players.remove(player)
+        player.location = section
+        section.players.append(player)
 
 class Section:
     id: int
@@ -66,10 +71,25 @@ class Cornucopia(Section):
             return resp
 
         def run():
-            return ActionResponse(
-                'You ran away', 
-                public=Message(f'{player.name} chooses to run away from the Cornucopia.')
-            )
+            r = random.randint(1, 100)
+            if r > 30:
+                response = ActionResponse(
+                    'You ran away', 
+                    public=Message(f'{player.name} chooses to run away from the Cornucopia.')
+                )
+            elif r > 27: # 3% chance
+                self.game.kill(player, 'stepped on a landmine')
+                response = ActionResponse(
+                    'You try to ran away but step on a landmine and die.', 
+                    public=Message(f'{player.name} tries to run away but steps on a landmine and dies.')
+                )
+            else:
+                player.health -= 10
+                response = ActionResponse(
+                    "You try to ran away but an arrow hits your leg and you can't run away. You'll need to fight to survive.", 
+                    public=Message(f"{player.name} tries to run away but get's injured.")
+                )                   
+            return response
 
         responses = [
             Response(
