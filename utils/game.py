@@ -137,7 +137,14 @@ class Game:
         if prompt.type == 1:
             pass # TODO
         else:
-            return SelectOption(self, str(prompt), [str(s) for s in prompt.responses])
+            options = [
+                str(s)
+                if s.emoji is None
+                else (str(s), s.emoji)
+                for s in prompt.responses
+            ]
+
+            return SelectOption(self, str(prompt), options)
 
     def get_prompt(self, member):
         return self.engine.players[member.id].get_prompt()

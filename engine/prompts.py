@@ -30,8 +30,8 @@ class ActionResponse:
 @dataclass
 class Response:
     display_text: str
-    action: Callable[..., ActionResponse]
-    id: int = 0
+    emoji: str = None
+    action: Callable[..., ActionResponse] = lambda: ActionResponse('Default')
 
     def __str__(self):
         return self.display_text

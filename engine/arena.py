@@ -63,7 +63,7 @@ class Cornucopia(Section):
             return 
         def enter():
             resp = ActionResponse(
-                f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
+                f'You enter the Cornucopia. You come across some weapons and food.', 
                 public=Message(f'{player.name} bravely enters the Cornucopia.'),
                 followup=self.generate_weapon_prompt(player)
             )
@@ -111,16 +111,17 @@ class Cornucopia(Section):
         responses = [
             Response(
                 'Dagger', 
+                emoji='🗡',
                 action=lambda: ActionResponse('ok'), 
             ), 
             Response(
                 'Your mom', 
+                emoji='👧',
                 action=lambda: ActionResponse('lmao'), 
             )
         ]
-        p = Prompt('Which weapon do you pick?', responses, delay=2)
-        player.prompt = p
-        return p
+
+        return player.set_prompt(Prompt('Which weapon do you pick?', responses))
 
 class Plains(Section):
     id = 6

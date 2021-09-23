@@ -56,7 +56,11 @@ class Player:
         return self.response
 
     def get_prompt(self):
-        self.prompt = self.location.get_prompt(self)
+        prompt = self.location.get_prompt(self)
+        return self.set_prompt(prompt)
+
+    def set_prompt(self, prompt):
+        self.prompt = prompt
         return self.prompt
 
     def kill(self, reason):
