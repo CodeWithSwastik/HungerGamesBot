@@ -1,4 +1,4 @@
-from .prompts import Prompt
+from .prompts import Prompt, Response, Action, ActionResponse
 
 class Arena:
     def __init__(self, game):
@@ -27,7 +27,7 @@ class Section:
         return self.__class__.__name__
 
     def get_prompt(self, player) -> Prompt:
-        return Prompt(f'lmao {player.name}', ['sad', 'e'])
+        return Prompt(f'lmao {player.name}', [Response('uwu', Action()), Response('uwu', Action())])
 
 class Snow(Section):
     id = 1

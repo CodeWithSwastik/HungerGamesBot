@@ -16,15 +16,18 @@ class Prompt:
 
 
 class Action:
-    def execute(self):
-        pass
+    def execute(self) -> "ActionResponse":
+        return ActionResponse('Default message')
 
 @dataclass()
 class Response:
     display_text: str
     action: Action
 
+    def __str__(self):
+        return self.display_text
+
 @dataclass()
 class ActionResponse:
     message: str
-    private: str = None
+    public: str = None

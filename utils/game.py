@@ -99,11 +99,12 @@ class Game:
 
     async def handle_response(self, interaction, response):
         result = self.engine.add_response(interaction.user.id, response)
-        
+
         await interaction.response.edit_message(content=result.message)
 
-        if result.private:
-            await self.ctx.send(result.private)
+        if result.public:
+            embed = discord.Embed(description=result.public, color=discord.Color.random())
+            await self.ctx.send(embed=embed)
         
         # TODO
 
@@ -150,7 +151,7 @@ class SelectOption(discord.ui.View):
         self.game = game
 
     async def select_callback(self, interaction):
-        await self.game.handle_response(interaction, self.select.values[0])
+        await self.game.handle_response(interaction, int(self.select.values[0]))
 
 
 
