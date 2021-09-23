@@ -10,7 +10,7 @@ class HungerGamesBot(commands.Bot):
         super().__init__(
             command_prefix=self.config.default_prefix,
             case_insensitive=True,
-            description="The Hunger Games bot",
+            description="I primarily run on slash commands!",
             allowed_mentions=discord.AllowedMentions(
                 roles=False, users=True, everyone=False
             ),

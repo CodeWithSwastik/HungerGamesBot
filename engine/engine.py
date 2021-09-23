@@ -8,6 +8,9 @@ class GameEngine:
         self.arena = Arena()
         self.current_day = None
 
+        self.prompts = {}
+        self.responses = {}
+
     def add_player(self, member):
         c = Player.from_member(member)
         self.players[c.id] = c
@@ -25,6 +28,9 @@ class GameEngine:
 
     def end_day(self):
         self.current_day = None
+        for player in self.players.values():
+            player.reset_responses()
+
 
 class Day:
     def __init__(self, date):

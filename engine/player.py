@@ -18,6 +18,11 @@ class Player:
         self.killed = []
         self.killed_by = None
 
+        # Runtime
+        self.responses:int = 0
+        self.response = None
+        self.prompt = None
+
     @classmethod
     def from_member(cls, member):
         return cls(member.name, member.id)
@@ -30,3 +35,20 @@ class Player:
             self.thirst > 100, 
             self.killed_by is not None
         ])
+
+    @property
+    def responded(self) -> bool:
+        return self.responses > 0
+    
+    def reset_responses(self):
+        self.responses = 0
+        self.response = None
+        self.prompt = None        
+    
+    def add_response(self, response):
+        self.responses += 1
+        self.response = response
+
+    def get_prompt(self):
+        self.prompt = self.location.get_prompt(self)
+        return self.prompt
