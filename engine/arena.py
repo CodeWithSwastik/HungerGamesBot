@@ -49,6 +49,20 @@ class Cornucopia(Section):
     id = 5
     neighbours = [2, 4, 8, 6]
 
+    def get_prompt(self, player) -> Prompt:
+        if not player.responded:
+            # first response
+            responses = [
+                Response(
+                    'Enter the Cornucopia', 
+                    Action('You entered the Cornucopia'), 
+                    id=0
+                ), 
+                Response('Run away', Action('You ran away'), id=1)
+            ]
+            return Prompt('Do you enter the Cornucopia?', responses)
+
+
 class Plains(Section):
     id = 6
     neighbours = [3, 5, 9]

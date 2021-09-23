@@ -64,7 +64,7 @@ class Game:
         )
         #await asyncio.sleep(30)
         
-        for day in range(2):
+        for day in range(1):
             await self.start_day(day)
         self.running = False
 
@@ -82,9 +82,9 @@ class Game:
         self.engine.end_day()
 
     async def progress_day(self):
-        for _ in range(20):
-            self.engine.progress_day(5)
-            await asyncio.sleep(10)
+        for _ in range(self.engine.current_day.length):
+            self.engine.progress_day(60)
+            await asyncio.sleep(15)
 
         await self.end_day()
 
@@ -100,12 +100,24 @@ class Game:
     async def handle_response(self, interaction, response):
         result = self.engine.add_response(interaction.user.id, response)
 
-        await interaction.response.edit_message(content=result.message)
 
         if result.public:
             embed = discord.Embed(description=result.public, color=discord.Color.random())
             await self.ctx.send(embed=embed)
         
+        await interaction.response.edit_message(
+            content=result.message, view = None
+        )
+        # r = self.game.get_prompt(interaction.user)
+        # if r is None:
+        #     await interaction.response.edit_message(
+        #         content=result.message, view = None
+        #     )
+            
+        # await interaction.response.edit_message(
+        #     content=result.message, view = self.prompt_to_view(r)
+        # )
+
         # TODO
 
 class StartButton(discord.ui.View):
@@ -130,6 +142,9 @@ class StartButton(discord.ui.View):
         elif self.game.engine.players[interaction.user.id].dead:
             await interaction.response.send_message("You are dead. You'll have to wait for this game to end before registering again.", ephemeral=True)
             return False
+        elif self.game.engine.players[interaction.user.id].responded:
+            await interaction.response.send_message("You have already begun this day.", ephemeral=True)
+            return False            
         return True
 
 class SelectOption(discord.ui.View):

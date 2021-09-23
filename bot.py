@@ -92,7 +92,7 @@ async def map(ctx):
     """
     Shows the map of the Hunger Games Arena.
     """
-    await ctx.respond("Here's the map of the Hunger Games Arena")
+    await ctx.respond("Here's the map of the Hunger Games Arena. \nSection V is the Cornucopia. Section I, III, VII and IX are high risk high reward sections.")
     await ctx.send(file=discord.File('map.png'))
 
 @bot.slash_command()

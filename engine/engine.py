@@ -1,3 +1,5 @@
+import random
+
 from .player import Player
 from .arena import Arena
 
@@ -38,15 +40,15 @@ class GameEngine:
 class Day:
     def __init__(self, date):
         self.date = date
-        self.time = 0 # 0 - Morning | 100 - Night 
-
+        self.time = 0 # mins from 8 am
+        self.length = random.randint(13, 15) # 9pm/10pm/11pm
 
     def __repr__(self):
-        if self.time < 33:
-            return 'Morning'
-        elif self.time < 66:
-            return 'Afternoon'
-        elif self.time < 99:
-            return 'Evening'
+        if self.time < 4*60:
+            return f'{8 + self.time//60} am (morning)'
+        elif self.time < 8*60:
+            return f'{(-4 + self.time//60) or "12:30"} pm (afternoon)'
+        elif self.time < 12*60:
+            return f'{-4 + self.time//60} pm (evening)'
         else:
-            return 'Night'
+            return f'{-4 + self.time//60} pm (night)'
