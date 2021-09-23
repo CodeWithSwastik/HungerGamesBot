@@ -64,14 +64,29 @@ class Game:
         )
         #await asyncio.sleep(30)
         
-        for day in range(1):
-            await self.process_day(day)
+        for day in range(2):
+            await self.start_day(day)
         self.running = False
 
-    async def process_day(self, day):
+    async def start_day(self, day):
+        self.engine.start_day(day)
+        
         view = StartButton(self)
         await self.ctx.send(f'Day {day} begins. Press the red button to begin.', view=view)
+        await self.progress_day()
+        
+    async def end_day(self):
+        # Winner needs to be checked here 
+        
+        await self.ctx.send(f'Day {self.engine.current_day.date} ends. These people died today. The next day will begin soon!', embed=self.create_tributes_embed())
+        self.engine.end_day()
 
+    async def progress_day(self):
+        for _ in range(20):
+            self.engine.progress_day(5)
+            await asyncio.sleep(10)
+
+        await self.end_day()
 
 class StartButton(discord.ui.View):
     def __init__(self, game):
@@ -80,7 +95,12 @@ class StartButton(discord.ui.View):
 
     @discord.ui.button(emoji='<:hunger_games_salute:890277338263224340>', style=discord.ButtonStyle.red)
     async def button_callback(self, button, interaction):
-        await interaction.response.send_message("haha yes wait what", view=SelectOption('hehe','uwu'))
+        e = self.game.engine.current_day
+        await interaction.response.send_message(
+            f"haha yes wait what. Current Time: {e} {e.time}",
+            view=SelectOption('hehe','uwu'),
+            ephemeral=True
+        )
 
     async def interaction_check(self, interaction):
         if not interaction.user in self.game.players:

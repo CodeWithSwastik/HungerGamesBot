@@ -66,9 +66,9 @@ async def add(ctx, tribute: discord.Member):
     result = await game.add_contestant(tribute)
 
     if result:
-        await ctx.respond(f"{tribute.mention} has been registered as tribute. May the odds be ever in their favour.")
+        await ctx.respond(f"{tribute.mention} has been selected as tribute. May the odds be ever in their favour.")
     else:
-        await ctx.reply(f"{tribute.mention} is already registered as a tribute.")
+        await ctx.reply(f"{tribute.mention} is already selected as a tribute.")
 
 @bot.slash_command()
 @game_exists()
