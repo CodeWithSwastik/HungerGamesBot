@@ -1,4 +1,4 @@
-from .prompts import Prompt, Response, Action, ActionResponse
+from .prompts import Prompt, Response, ActionResponse, Message
 
 class Arena:
     def __init__(self, game):
@@ -27,7 +27,7 @@ class Section:
         return self.__class__.__name__
 
     def get_prompt(self, player) -> Prompt:
-        return Prompt(f'lmao {player.name}', [Response('uwu', Action()), Response('uwu', Action())])
+        return Prompt(f'lmao {player.name}', [])
 
 class Snow(Section):
     id = 1
@@ -49,16 +49,38 @@ class Cornucopia(Section):
     id = 5
     neighbours = [2, 4, 8, 6]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cornucopia = []
+
     def get_prompt(self, player) -> Prompt:
         if not player.responded:
             # first response
+
+            def enter():
+                self.cornucopia.append(player)
+                return ActionResponse(
+                    f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
+                    public=Message(f'{player.name} bravely enters the Cornucopia.')
+                )
+
+            def run():
+                return ActionResponse(
+                    'You ran away', 
+                    public=Message(f'{player.name} chooses to run away from the Cornucopia.')
+                )
+
             responses = [
                 Response(
                     'Enter the Cornucopia', 
-                    Action('You entered the Cornucopia'), 
+                    action=enter, 
                     id=0
                 ), 
-                Response('Run away', Action('You ran away'), id=1)
+                Response(
+                    'Run away', 
+                    action=run, 
+                    id=1
+                )
             ]
             return Prompt('Do you enter the Cornucopia?', responses)
 

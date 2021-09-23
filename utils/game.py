@@ -69,6 +69,7 @@ class Game:
         self.running = False
 
     async def start_day(self, day):
+        self.interactions = {}
         self.engine.start_day(day)
         
         view = StartButton(self)
@@ -98,11 +99,15 @@ class Game:
         return self.engine.players[member.id].get_prompt()
 
     async def handle_response(self, interaction, response):
+        self.interactions[interaction.user.id] = interaction
         result = self.engine.add_response(interaction.user.id, response)
 
 
         if result.public:
-            embed = discord.Embed(description=result.public, color=discord.Color.random())
+            embed = discord.Embed(
+                description=result.public.description, 
+                color=result.public.color or discord.Color.random()
+            )
             await self.ctx.send(embed=embed)
         
         await interaction.response.edit_message(

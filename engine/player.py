@@ -40,6 +40,9 @@ class Player:
     def responded(self) -> bool:
         return self.responses > 0
     
+    def __repr__(self):
+        return f'<Player: {self.name}>'
+
     def reset_responses(self):
         self.responses = 0
         self.response = None
@@ -53,3 +56,4 @@ class Player:
     def get_prompt(self):
         self.prompt = self.location.get_prompt(self)
         return self.prompt
+
