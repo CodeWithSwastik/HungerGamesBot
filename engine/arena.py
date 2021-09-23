@@ -32,7 +32,7 @@ class Section:
         return self.__class__.__name__
 
     def get_prompt(self, player) -> Prompt:
-        return Prompt(f'lmao {player.name}', [])
+        return Prompt(f'Default message {player.name}', [])
 
 class Snow(Section):
     id = 1
@@ -61,7 +61,6 @@ class Cornucopia(Section):
     def get_prompt(self, player) -> Prompt:
         if player.responded:
             return 
-
         def enter():
             resp = ActionResponse(
                 f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
@@ -103,6 +102,8 @@ class Cornucopia(Section):
                 id=1
             )
         ]
+        
+        player.finished_responding = True
         return Prompt('Do you enter the Cornucopia?', responses)
 
 
