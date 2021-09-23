@@ -67,6 +67,7 @@ class Cornucopia(Section):
                 public=Message(f'{player.name} bravely enters the Cornucopia.')
             )
             self.cornucopia.append(player)
+            player.finished_responding = True
             return resp
 
         def run():
@@ -86,8 +87,9 @@ class Cornucopia(Section):
                 player.health -= 10
                 response = ActionResponse(
                     "You try to ran away but an arrow hits your leg and you can't run away. You'll need to fight to survive.", 
-                    public=Message(f"{player.name} tries to run away but get's injured.")
-                )                   
+                    public=Message(f"{player.name} tries to run away but gets injured.")
+                )
+            player.finished_responding = True                   
             return response
 
         responses = [
@@ -102,8 +104,8 @@ class Cornucopia(Section):
                 id=1
             )
         ]
+
         
-        player.finished_responding = True
         return Prompt('Do you enter the Cornucopia?', responses)
 
 

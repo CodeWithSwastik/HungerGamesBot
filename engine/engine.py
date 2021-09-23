@@ -40,7 +40,6 @@ class GameEngine:
         return True
 
     def end_day(self):
-        self.current_day = None
         for player in self.players.values():
             player.reset_responses()
         
