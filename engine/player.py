@@ -47,7 +47,8 @@ class Player:
     
     def add_response(self, response):
         self.responses += 1
-        self.response = response
+        self.response = self.prompt.responses[response]
+        return self.response
 
     def get_prompt(self):
         self.prompt = self.location.get_prompt(self)

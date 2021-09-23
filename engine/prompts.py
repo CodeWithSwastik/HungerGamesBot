@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 class Prompt:
     def __init__(self, display_text, responses, type = 2):
         """
@@ -11,11 +14,17 @@ class Prompt:
     def __str__(self):
         return self.display_text
 
-class Response:
-    def __init__(self, display_text, actions):
-        self.display_text = display_text
-        self.actions = actions
 
 class Action:
     def execute(self):
         pass
+
+@dataclass()
+class Response:
+    display_text: str
+    action: Action
+
+@dataclass()
+class ActionResponse:
+    message: str
+    private: str = None

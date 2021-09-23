@@ -98,8 +98,13 @@ class Game:
         return self.engine.players[member.id].get_prompt()
 
     async def handle_response(self, interaction, response):
-        self.engine.players[interaction.user.id].add_response(response)
-        await interaction.response.edit_message(content='yeah boi')
+        result = self.engine.add_response(interaction.user.id, response)
+        
+        await interaction.response.edit_message(content=result.message)
+
+        if result.private:
+            await self.ctx.send(result.private)
+        
         # TODO
 
 class StartButton(discord.ui.View):
@@ -130,11 +135,14 @@ class SelectOption(discord.ui.View):
     def __init__(self, game, options):
         super().__init__()
         final_options = []
-        for option in options:
+        for i, option in enumerate(options):
             if isinstance(option, str):
-                final_options.append(discord.SelectOption(label=option))
+                final_options.append(discord.SelectOption(label=option, value=i))
             else:
-                final_options.append(discord.SelectOption(label=option[0], emoji=option[1]))
+                final_options.append(
+                    discord.SelectOption(
+                        label=option[0], emoji=option[1], value=i
+                    ))
 
         self.select = discord.ui.Select(placeholder='What will you do?', options=final_options)
         self.select.callback = self.select_callback

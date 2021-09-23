@@ -31,6 +31,9 @@ class GameEngine:
         for player in self.players.values():
             player.reset_responses()
 
+    def add_response(self, player, response):
+        response = self.players[player].add_response(response)
+        return response.action.execute()
 
 class Day:
     def __init__(self, date):
