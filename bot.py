@@ -119,4 +119,10 @@ async def list_(ctx):
     embed = bot.get_game(ctx).create_tributes_embed()
     await ctx.reply(embed=embed)
 
-
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def test(ctx):
+    game = await bot.create_game(discord.utils.get(ctx.guild.roles, name='Contestant'))
+    ctx.respond = ctx.send
+    await game.add_contestant(ctx.author)
+    await game.run(ctx)

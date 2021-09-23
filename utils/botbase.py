@@ -41,9 +41,14 @@ class HungerGamesBot(commands.Bot):
         # assert len(role.members) == 0 
 
         self.hunger_games[role.guild.id] = Game(self, role)
+        return self.hunger_games[role.guild.id]
 
     def get_game(self, ctx) -> Game:
         return self.hunger_games.get(ctx.guild.id)
+
+    def end_game(self, guild):
+        del self.hunger_games[guild.id]
+
 
 class InteractionContext(ApplicationContext):
     def reply(self, *args, **kwargs):

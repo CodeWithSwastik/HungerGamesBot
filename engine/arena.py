@@ -54,35 +54,36 @@ class Cornucopia(Section):
         self.cornucopia = []
 
     def get_prompt(self, player) -> Prompt:
-        if not player.responded:
-            # first response
+        if player.responded:
+            return 
 
-            def enter():
-                self.cornucopia.append(player)
-                return ActionResponse(
-                    f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
-                    public=Message(f'{player.name} bravely enters the Cornucopia.')
-                )
+        def enter():
+            resp = ActionResponse(
+                f'You entered the Cornucopia. These are the people there: {self.cornucopia}', 
+                public=Message(f'{player.name} bravely enters the Cornucopia.')
+            )
+            self.cornucopia.append(player)
+            return resp
 
-            def run():
-                return ActionResponse(
-                    'You ran away', 
-                    public=Message(f'{player.name} chooses to run away from the Cornucopia.')
-                )
+        def run():
+            return ActionResponse(
+                'You ran away', 
+                public=Message(f'{player.name} chooses to run away from the Cornucopia.')
+            )
 
-            responses = [
-                Response(
-                    'Enter the Cornucopia', 
-                    action=enter, 
-                    id=0
-                ), 
-                Response(
-                    'Run away', 
-                    action=run, 
-                    id=1
-                )
-            ]
-            return Prompt('Do you enter the Cornucopia?', responses)
+        responses = [
+            Response(
+                'Enter the Cornucopia', 
+                action=enter, 
+                id=0
+            ), 
+            Response(
+                'Run away', 
+                action=run, 
+                id=1
+            )
+        ]
+        return Prompt('Do you enter the Cornucopia?', responses)
 
 
 class Plains(Section):

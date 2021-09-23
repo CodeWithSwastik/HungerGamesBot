@@ -32,7 +32,15 @@ class Game:
             f'💪 Strength: {player.strength}',
             f'🍖 Hunger: {player.hunger}',
             f'💧 Thirst: {player.thirst}',
+            f'❤ Health: {player.health}'
         ])
+        if self.running:
+            embed.description += '\n'*2
+            embed.description += '\n'.join([
+                f'🗺 Location: {player.location}',
+                f'🏹 Weapons: {player.weapons or None}',
+                f'🔪 Killed: {player.killed or None}',
+            ])
         embed.set_footer(text="Tip: If your hunger or thirst goes over 100, you'll die!")
         return embed
 
@@ -67,6 +75,7 @@ class Game:
         for day in range(1):
             await self.start_day(day)
         self.running = False
+        self.bot.end_game(self.guild)
 
     async def start_day(self, day):
         self.interactions = {}
