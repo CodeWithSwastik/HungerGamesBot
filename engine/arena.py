@@ -141,7 +141,12 @@ class Cornucopia(Section):
                     return ActionResponse(
                         f'You are already in battle!!',
                     )                   
-                    
+                if p.in_battle:
+                    return ActionResponse(
+                        f'{p} is already in a battle!!',
+                        followup=self.generate_choose_target_prompt(player)
+                    )              
+
                 battle = self.game.start_battle(player, p)
 
                 return ActionResponse(

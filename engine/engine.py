@@ -38,6 +38,12 @@ class GameEngine:
         if all([p.finished_responding for p in self.alive_players]):
             self.end_day()        
             return False
+
+        for p in self.alive_players:
+            p.update_hunger_and_thirst()
+            if p.dead:
+                self.kill(p, p.get_death_reason())
+
         return True
 
     def end_day(self):
@@ -62,6 +68,8 @@ class GameEngine:
         return reason
 
     def start_battle(self, player1, player2):
+        if player1.in_battle or player2.in_battle:
+            return False
         return Battle(player1, player2)
 
 class Day:

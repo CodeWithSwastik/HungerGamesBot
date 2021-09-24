@@ -156,7 +156,13 @@ class Game:
     def on_player_death(self, player, reason):
         member = self.get_member(player)
         async def inner():
-            await member.remove_roles(self.contestant_role)    
+            await member.remove_roles(self.contestant_role) 
+            embed = self.get_embed_for(member,
+                title='A Tribute has falled', 
+                description=f'{player} {reason}', 
+                color=discord.Color.red()
+            )
+            await self.ctx.send(member.mention, embed=embed)
         asyncio.create_task(inner())
 
     async def handle_response(self, interaction, response):

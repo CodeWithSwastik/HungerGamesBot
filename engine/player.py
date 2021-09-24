@@ -56,6 +56,19 @@ class Player:
     def in_battle(self) -> bool:
         return self.battle is not None
     
+    @property
+    def hunger_rate(self) -> int:
+        rate = self.strength/100
+        return round(rate)
+
+    @property
+    def thirst_rate(self) -> int:
+        rate = self.strength/100
+        return round(rate)
+
+    def update_hunger_and_thirst(self):
+        self.hunger += self.hunger_rate
+        self.thirst += self.thirst_rate
 
     def __repr__(self):
         return f'<Player: {self.name} {self.id}>'
@@ -91,3 +104,16 @@ class Player:
     def kill(self, reason):
         self.health = 0
         self.reason_of_death = reason
+
+    def get_death_reason(self):
+        if not self.reason_of_death:
+            if self.hunger > 100:
+                self.kill('starved to death')
+            elif self.thirst > 100:
+                self.kill('died of dehydration')
+            elif self.killed_by:
+                self.kill(f'got killed by {self.killed_by}')
+            elif self.health < 100:
+                self.kill('succumbed to their injuries')
+
+        return self.reason_of_death 

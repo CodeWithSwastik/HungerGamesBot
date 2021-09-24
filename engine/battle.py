@@ -30,5 +30,15 @@ class Battle:
         damage = self.effective_damage(other) * location_mult[location]
         player.health -= damage
         if player.dead:
-            self.over = True
+            player.kill(f'murded by {other}')
+            player.killed_by = other
+
             self.winner = other
+            self.end()
+
+    def end(self):
+        self.over = True
+        self.player1.primary_weapon = None
+        self.player2.primary_weapon = None
+        self.player1.battle = None
+        self.player2.battle = None
