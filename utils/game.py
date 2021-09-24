@@ -16,7 +16,8 @@ class Game:
         self.engine.on_player_death = self.on_player_death
         self.players = []
         self.running = False
-    
+        self.active_views = []
+
     async def add_contestant(self, member):
         if member in self.players:
             return False
@@ -93,7 +94,7 @@ class Game:
         self.interactions = {}
         self.engine.start_day(day)
         
-        view = StartButton(self)
+        view = self.create_view(StartButton)
         await self.ctx.send(f'Day {day} begins. Press the red button to begin.', view=view)
         await self.progress_day()
 
@@ -109,6 +110,12 @@ class Game:
 
         self.engine.end_day()
         await self.ctx.send(embed=embed)
+
+        for view in self.active_views:
+            if not view.is_finished:
+                view.stop()
+        
+        self.active_views = []
 
         if self.engine.finished:
             if self.engine.winner is not None:
@@ -153,8 +160,7 @@ class Game:
                 else (str(s), s.emoji)
                 for s in prompt.responses
             ]
-
-            return SelectOption(self, str(prompt), options)
+            return self.create_view(SelectOption, str(prompt), options)
 
     def get_prompt(self, member):
         return self.get_player(member).get_prompt()
@@ -207,7 +213,7 @@ class Game:
         embed.set_footer(text='The participants of this battle can press the button to fight')
         await self.ctx.send(
             ' '.join(f'<@{i}>' for i in battle.participants), 
-            view=BattleButton(self, battle)
+            view=self.create_view(BattleButton, battle)
         )
 
     async def handle_battle_response(self, interaction, response):
@@ -231,7 +237,7 @@ class Game:
             
             await interaction.edit_original_message(
                 content=f'Where do you attack {other}?',
-                view=SelectOption(self, 'Where do you attack?', parts, battle=True)
+                view=self.create_view(SelectOption, 'Where do you attack?', parts, battle=True)
             )
         else:
             response = parts[response][0].lower()
@@ -244,14 +250,18 @@ class Game:
             elif damage_dealt is None:
                 await interaction.response.edit_message(
                     content=f'You missed the shot!',
-                    view=SelectOption(self, 'Where do you attack next?', parts, battle=True)
+                    view=self.create_view(SelectOption, 'Where do you attack next?', parts, battle=True)
                 )
             else:
                 await interaction.response.edit_message(
                     content=f'Your hit dealt {damage_dealt} damage!',
-                    view=SelectOption(self, 'Where do you attack next?', parts, battle=True)
-                )                
-                            
+                    view=self.create_view(SelectOption, 'Where do you attack next?', parts, battle=True)
+                )        
+
+    def create_view(self, cls, *args, **kwargs):
+        view = cls(self, *args, **kwargs)
+        self.active_views.append(view)
+        return view          
 
 class StartButton(discord.ui.View):
     def __init__(self, game):
@@ -316,6 +326,7 @@ class BattleButton(discord.ui.View):
         weapons = [(w.name, w.emoji) for w in player.usable_weapons]
 
         view = SelectOption(self.game, 'Select a weapon', weapons, battle=True)
+        self.active_views.append(view)
         await interaction.response.send_message(
             f"Which weapon will you pick to fight in this battle?",
             view=view,
