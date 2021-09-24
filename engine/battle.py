@@ -1,7 +1,8 @@
 import random
 
 class Battle:
-    def __init__(self, player1, player2):
+    def __init__(self, game, player1, player2):
+        self.game = game
         self.player1 = player1
         self.player2 = player2
         self.participants = [self.player1.id, self.player2.id]
@@ -12,7 +13,7 @@ class Battle:
         self.winner = None
 
     def base_damage(self, player):
-        return player.strength + player.primary_weapon.power
+        return (player.strength + player.primary_weapon.power)/100
 
 
     def get_other(self, player):
@@ -27,12 +28,12 @@ class Battle:
         if self.miss(other.primary_weapon, location[-2]):
             return None
 
-        mult = location[-1]
+        mult = location[-1] * random.uniform(1,2)
 
-        damage = self.base_damage(other) * mult
+        damage = round(self.base_damage(other) * mult)
         player.health -= damage
         if player.dead:
-            player.kill(f'slain in battle by {other}')
+            self.game.kill(player, f'was slain in battle by {other}')
             player.killed_by = other
 
             self.winner = other

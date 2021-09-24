@@ -80,7 +80,7 @@ class Game:
         )
         #await asyncio.sleep(30)
         
-        for day in range(1):
+        for day in range(1,10):
             await self.start_day(day)
 
         if self.running:
@@ -100,7 +100,7 @@ class Game:
         if self.engine.current_day.killed:
             embed.description = "Fallen Tributes:\n"
             embed.description += "\n".join(
-                [f"<@{p.id}>," for p in self.engine.current_day.killed]
+                [f"<@{p.id}>" for p in self.engine.current_day.killed]
             )
         else:
             embed.description = "No one died today, but will it be the same tomorrow?"

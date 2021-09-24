@@ -70,7 +70,7 @@ class GameEngine:
     def start_battle(self, player1, player2):
         if player1.in_battle or player2.in_battle:
             return False
-        return Battle(player1, player2)
+        return Battle(self, player1, player2)
 
 class Day:
     def __init__(self, date):
