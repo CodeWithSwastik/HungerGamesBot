@@ -82,7 +82,9 @@ class Game:
         
         for day in range(1,10):
             await self.start_day(day)
-
+            if not self.running:
+                break
+        
         if self.running:
             self.running = False
             self.bot.end_game(self.guild)
@@ -162,7 +164,7 @@ class Game:
         async def inner():
             await member.remove_roles(self.contestant_role) 
             embed = self.get_embed_for(member,
-                title='A Tribute has falled', 
+                title='A Tribute has fallen', 
                 description=f'{player} {reason}', 
                 color=discord.Color.red()
             )
@@ -199,8 +201,12 @@ class Game:
         # TODO
 
     async def start_battle(self, battle: Battle):
+        embed = discord.Embed(
+            title='Battle ⚔', description=f'{battle.player1} and {battle.player2} get into a fierce battle!'
+        )
+        embed.set_footer(text='The participants of this battle can press the button to fight')
         await self.ctx.send(
-            f'Battle {battle.player1} {battle.player2}!!', 
+            ' '.join(f'<@{i}>' for i in battle.participants), 
             view=BattleButton(self, battle)
         )
 

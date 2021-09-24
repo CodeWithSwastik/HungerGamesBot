@@ -28,13 +28,14 @@ class Battle:
         if self.miss(other.primary_weapon, location[-2]):
             return None
 
-        mult = location[-1] * random.uniform(1,2)
+        mult = location[-1] * random.uniform(2, 3)
 
         damage = round(self.base_damage(other) * mult)
         player.health -= damage
         if player.dead:
             self.game.kill(player, f'was slain in battle by {other}')
             player.killed_by = other
+            other.killed.append(player)
 
             self.winner = other
             self.end()

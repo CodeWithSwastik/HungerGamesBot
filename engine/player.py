@@ -52,6 +52,10 @@ class Player:
             self.thirst > 100, 
             self.reason_of_death is not None
         ])
+    
+    @property
+    def alive(self) -> bool:
+        return not self.dead
 
     @property
     def responded(self) -> bool:

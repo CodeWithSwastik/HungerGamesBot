@@ -160,7 +160,7 @@ class Cornucopia(Section):
                 p.name, 
                 emoji="💀",
                 action=attack(p), 
-            ) for p in self.cornucopia if p.id != player.id
+            ) for p in self.cornucopia if p.id != player.id and p.alive and not p.in_battle
         ]
         return player.create_prompt('Who do you attack?', responses)
 
