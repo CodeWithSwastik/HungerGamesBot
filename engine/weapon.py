@@ -4,60 +4,73 @@ weapons = {
   "Axe": {
     "emoji": "🪓",
     "power": (30, 50),
+    "accuracy": 65,
   },
   "Throwing axe": {
     "emoji": "🪓",
     "power": (40, 50),
+    "accuracy": 40,
   },
   "Bow and arrow": {
     "emoji": "🏹",
     "power": (30, 70),
+    "accuracy": 75,
   },
   "Crossbow": {
     "emoji": "🏹",
     "power": (40, 60),
+    "accuracy": 85,
   },
   "Knife": {
     "emoji": "🔪",
     "power": (20, 50),
+    "accuracy": 80,
   },
   "Throwing knife": {
     "emoji": "🔪",
     "power": (30, 50),
+    "accuracy": 55,
   },
   "Mace": {
     "emoji": "⚔",
     "power": (25, 45),
+    "accuracy": 70,
   },
   "Machete": {
     "emoji": "⚔",
     "power": (30, 45),
+    "accuracy": 75,
   },
   "Spear": {
     "emoji": "🗡",
     "power": (20, 45),
+    "accuracy": 65,
   },
   "Diamond Sword": {
     "emoji": "⚔",
     "power": (35, 70),
+    "accuracy": 80,
   },
   "Trident": {
     "emoji": "🔱",
     "power": (20, 60),
+    "accuracy": 70,
   },
   "Slingshot": {
     "emoji": "✂",
     "power": (30, 50),
+    "accuracy": 65,
   }
 }
 
 
 
 class Weapon:
-    def __init__(self, name, emoji, level, power = None):
+    def __init__(self, name, emoji, level=1, accuracy = None, power = None):
         self.name = name
         self.emoji = emoji
         self.level = level
+        self.accuracy = accuracy or Weapon.get_accuracy(self.name, 60) # 0-100%
         self.power = power or Weapon.get_power(self.name, 60)
 
     def upgrade(self):
@@ -81,6 +94,13 @@ class Weapon:
         if weapon is None:
             return default
         return random.randint(*weapon['power'])
+
+    @staticmethod
+    def get_accuracy(weapon_name, default = None):
+        weapon = weapons.get(weapon_name)
+        if weapon is None:
+            return default
+        return weapon['accuracy']
 
     def __repr__(self):
         return f'<Weapon {self.name}: Level {self.level} | Power {self.power}>'

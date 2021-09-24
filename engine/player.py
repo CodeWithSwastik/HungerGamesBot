@@ -25,7 +25,11 @@ class Player:
         self.weapons: CustomList[Weapon] = CustomList()
         self.killed = CustomList()
         self.reason_of_death = None
-        self.hands = Weapon('Bare Hands', '👊', 1, random.randint(5, 15))
+        self.hands = Weapon(
+            'Fist', '👊', 
+            accuracy=90,
+            power=random.randint(5, 15)
+        )
 
         # Runtime
         self.responses:int = 0
@@ -122,3 +126,18 @@ class Player:
     @property
     def usable_weapons(self):
         return self.weapons + [self.hands]
+
+    @property
+    def body_parts(self):
+        return [
+            # name, emoji, size (1-10), vulnerability (1-10)
+            ('Head', '👨‍🦱',  4, 8), 
+            ('Body', '👕', 10, 4), # large area ->  might not hit an organ
+            ('Legs', '👖',  8, 5), # reduces mobility
+            ('Feet', '👞',  2, 5) # reduces mobility
+        ]
+    
+    def get_body_part(self, location):
+        for part in self.body_parts:
+            if location.lower() == part[0].lower():
+                return part

@@ -206,10 +206,46 @@ class Game:
 
     async def handle_battle_response(self, interaction, response):
         player = self.get_player(interaction.user)
-        player.primary_weapon = player.usable_weapons[response]
-        battle = player.battle
+        battle: Battle = player.battle
+        if battle is None:
+            return await interaction.response.edit_message(
+                content=f'You died.',
+                view=None
+            )
+        other = battle.get_other(player)
+        parts = player.body_parts
 
-        await interaction.response.send_message(f'ok boi you picked {player.primary_weapon}')
+        if player.primary_weapon is None:
+            player.primary_weapon = player.usable_weapons[response]
+            await interaction.response.edit_message(
+                content=f'ok boi you picked {player.primary_weapon}',
+                view=None
+            )
+            await asyncio.sleep(2)
+            
+            await interaction.edit_original_message(
+                content=f'Where do you attack {other}?',
+                view=SelectOption(self, 'Where do you attack?', parts, battle=True)
+            )
+        else:
+            response = parts[response][0].lower()
+            damage_dealt = battle.attack(other, response)
+            if other.dead:
+                await interaction.response.edit_message(
+                    content=f'You killed them! Damage dealt: {damage_dealt}',
+                    view=None
+                )
+            elif damage_dealt is None:
+                await interaction.response.edit_message(
+                    content=f'You missed the shot!',
+                    view=SelectOption(self, 'Where do you attack next?', parts, battle=True)
+                )
+            else:
+                await interaction.response.edit_message(
+                    content=f'Your hit dealt {damage_dealt} damage!',
+                    view=SelectOption(self, 'Where do you attack next?', parts, battle=True)
+                )                
+                            
 
 class StartButton(discord.ui.View):
     def __init__(self, game):
@@ -266,7 +302,7 @@ class BattleButton(discord.ui.View):
         super().__init__()
         self.game = game
         self.battle = battle
-
+        self.clicked = []
     @discord.ui.button(emoji='⚔', style=discord.ButtonStyle.red)
     async def button_callback(self, button, interaction):
         player = self.game.get_player(interaction.user)
@@ -283,5 +319,9 @@ class BattleButton(discord.ui.View):
     async def interaction_check(self, interaction):
         if interaction.user.id not in self.battle.participants:
             await interaction.response.send_message("You are not a participant in this battle!", ephemeral=True)
-            return False           
+            return False
+        if interaction.user in self.clicked:
+            await interaction.response.send_message("You already clicked the button!", ephemeral=True)
+            return False 
+        self.clicked.append(interaction.user)                 
         return True

@@ -11,30 +11,33 @@ class Battle:
         self.over = False
         self.winner = None
 
-    def effective_damage(self, player):
-        if player.primary_weapon:
-            return player.strength + player.primary_weapon.power
-        else:
-            return player.strength
+    def base_damage(self, player):
+        return player.strength + player.primary_weapon.power
+
 
     def get_other(self, player):
         return self.player1 if self.player2 == player else self.player2
 
+    def miss(self, weapon, body_part_size):
+        return (weapon.accuracy/100) * (body_part_size/10) > random.random()
+
     def attack(self, player, location):
-        location_mult = {
-            'head': random.randint(4, 6)/10,
-            'body': random.randint(2, 8)/10,
-            'legs': random.randint(2, 6)/10
-        }
         other = self.get_other(player)
-        damage = self.effective_damage(other) * location_mult[location]
+        location = player.get_body_part(location)
+        if self.miss(other.primary_weapon, location[-2]):
+            return None
+
+        mult = location[-1]
+
+        damage = self.base_damage(other) * mult
         player.health -= damage
         if player.dead:
-            player.kill(f'murded by {other}')
+            player.kill(f'slain in battle by {other}')
             player.killed_by = other
 
             self.winner = other
             self.end()
+        return damage
 
     def end(self):
         self.over = True
