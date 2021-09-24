@@ -25,6 +25,7 @@ class Player:
         self.weapons: CustomList[Weapon] = CustomList()
         self.killed = CustomList()
         self.reason_of_death = None
+        self.hands = Weapon('Bare Hands', '👊', 1, random.randint(5, 15))
 
         # Runtime
         self.responses:int = 0
@@ -117,3 +118,7 @@ class Player:
                 self.kill('succumbed to their injuries')
 
         return self.reason_of_death 
+
+    @property
+    def usable_weapons(self):
+        return self.weapons + [self.hands]

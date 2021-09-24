@@ -28,9 +28,13 @@ class Game:
     def get_member(self, player) -> discord.Member:
         return discord.utils.get(self.players, id=player.id)
 
+    def get_player(self, member):
+        return self.engine.players[member.id]
+
+
     def create_stats_embed(self, member):
         embed = discord.Embed(title=f"{member.name}'s stats", color=discord.Color.yellow())
-        player = self.engine.players[member.id]
+        player = self.get_player(member)
         
         embed.description = '\n'.join([
             f'💪 Strength: {player.strength}',
@@ -151,7 +155,7 @@ class Game:
             return SelectOption(self, str(prompt), options)
 
     def get_prompt(self, member):
-        return self.engine.players[member.id].get_prompt()
+        return self.get_player(member).get_prompt()
 
     def on_player_death(self, player, reason):
         member = self.get_member(player)
@@ -200,6 +204,13 @@ class Game:
             view=BattleButton(self, battle)
         )
 
+    async def handle_battle_response(self, interaction, response):
+        player = self.get_player(interaction.user)
+        player.primary_weapon = player.usable_weapons[response]
+        battle = player.battle
+
+        await interaction.response.send_message(f'ok boi you picked {player.primary_weapon}')
+
 class StartButton(discord.ui.View):
     def __init__(self, game):
         super().__init__()
@@ -228,7 +239,7 @@ class StartButton(discord.ui.View):
         return True
 
 class SelectOption(discord.ui.View):
-    def __init__(self, game, placeholder, options):
+    def __init__(self, game, placeholder, options, battle=False):
         super().__init__()
         final_options = []
         for i, option in enumerate(options):
@@ -244,9 +255,11 @@ class SelectOption(discord.ui.View):
         self.select.callback = self.select_callback
         self.add_item(self.select)
         self.game = game
-
+        self.battle = battle
     async def select_callback(self, interaction):
-        await self.game.handle_response(interaction, int(self.select.values[0]))
+        if not self.battle:
+            return await self.game.handle_response(interaction, int(self.select.values[0]))
+        await self.game.handle_battle_response(interaction, int(self.select.values[0]))
 
 class BattleButton(discord.ui.View):
     def __init__(self, game, battle):
@@ -256,8 +269,14 @@ class BattleButton(discord.ui.View):
 
     @discord.ui.button(emoji='⚔', style=discord.ButtonStyle.red)
     async def button_callback(self, button, interaction):
+        player = self.game.get_player(interaction.user)
+
+        weapons = [(w.name, w.emoji) for w in player.usable_weapons]
+
+        view = SelectOption(self.game, 'Select a weapon', weapons, battle=True)
         await interaction.response.send_message(
-            f":yeahboi:",
+            f"Which weapon will you pick to fight in this battle?",
+            view=view,
             ephemeral=True
         )
 
