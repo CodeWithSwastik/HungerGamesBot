@@ -189,7 +189,10 @@ class Game:
         # TODO
 
     async def start_battle(self, battle: Battle):
-        await self.ctx.send(f'Battle {battle.player1} {battle.player2}!!')
+        await self.ctx.send(
+            f'Battle {battle.player1} {battle.player2}!!', 
+            view=BattleButton(self, battle)
+        )
 
 class StartButton(discord.ui.View):
     def __init__(self, game):
@@ -239,7 +242,21 @@ class SelectOption(discord.ui.View):
     async def select_callback(self, interaction):
         await self.game.handle_response(interaction, int(self.select.values[0]))
 
+class BattleButton(discord.ui.View):
+    def __init__(self, game, battle):
+        super().__init__()
+        self.game = game
+        self.battle = battle
 
+    @discord.ui.button(emoji='⚔', style=discord.ButtonStyle.red)
+    async def button_callback(self, button, interaction):
+        await interaction.response.send_message(
+            f":yeahboi:",
+            ephemeral=True
+        )
 
-
-    
+    async def interaction_check(self, interaction):
+        if interaction.user.id not in self.battle.participants:
+            await interaction.response.send_message("You are not a participant in this battle!", ephemeral=True)
+            return False           
+        return True

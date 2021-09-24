@@ -137,7 +137,13 @@ class Cornucopia(Section):
     def generate_choose_target_prompt(self, player):
         def attack(p):
             def inner():
+                if player.in_battle:
+                    return ActionResponse(
+                        f'You are already in battle!!',
+                    )                   
+                    
                 battle = self.game.start_battle(player, p)
+
                 return ActionResponse(
                     f'You started a battle with {p.name}',
                     battle = battle

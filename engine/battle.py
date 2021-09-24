@@ -4,6 +4,9 @@ class Battle:
     def __init__(self, player1, player2):
         self.player1 = player1
         self.player2 = player2
+        self.participants = [self.player1.id, self.player2.id]
+        self.player1.battle = self
+        self.player2.battle = self
 
         self.over = False
         self.winner = None

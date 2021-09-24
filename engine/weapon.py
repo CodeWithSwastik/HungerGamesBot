@@ -87,7 +87,7 @@ class Weapon:
 
     def __str__(self):
         return self.name
-        
+
 def generate_unique_weapons(n=1):
     return [
         Weapon.from_name(w) for w in

@@ -32,6 +32,7 @@ class Player:
         self.prompt = None
         self.finished_responding = False
 
+        self.battle = None
         self.primary_weapon = None # To be set during battles
 
     @classmethod
@@ -50,7 +51,12 @@ class Player:
     @property
     def responded(self) -> bool:
         return self.responses > 0
+
+    @property
+    def in_battle(self) -> bool:
+        return self.battle is not None
     
+
     def __repr__(self):
         return f'<Player: {self.name} {self.id}>'
 
