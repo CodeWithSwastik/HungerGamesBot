@@ -1,12 +1,13 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
+
+from .battle import Battle
 
 @dataclass
 class Prompt:
     """
     type:   1 (Yes/No)
             2 (Multiple choice)
-            3 (Battle)
     """
     display_text: str
     responses: list
@@ -26,6 +27,7 @@ class ActionResponse:
     message: str
     public: Message = None
     followup: Prompt = None
+    battle: Battle = None
 
 @dataclass
 class Response:

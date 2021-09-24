@@ -85,6 +85,9 @@ class Weapon:
     def __repr__(self):
         return f'<Weapon {self.name}: Level {self.level} | Power {self.power}>'
 
+    def __str__(self):
+        return self.name
+        
 def generate_unique_weapons(n=1):
     return [
         Weapon.from_name(w) for w in

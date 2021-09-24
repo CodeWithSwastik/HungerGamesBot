@@ -1,6 +1,6 @@
 import random
 from .prompts import Prompt, Response, ActionResponse, Message
-from .weapon import Weapon, generate_unique_weapons
+from .weapon import generate_unique_weapons
 
 class Arena:
     def __init__(self, game):
@@ -112,7 +112,16 @@ class Cornucopia(Section):
         def give_weapon(weapon):
             def inner():
                 player.weapons.append(weapon)
-                return ActionResponse(f'You took the {weapon.name}')
+                if len(self.cornucopia) > 1:
+                    return ActionResponse(
+                        f'You took the {weapon.name}. You see some people in the cornucopia, who do you attack?', 
+                        followup=self.generate_choose_target_prompt(player)
+                    )
+                else:
+                    return ActionResponse(
+                        f'You took the {weapon.name}. It seems like you are the first one here.', 
+                    )
+
             return inner
 
         responses = [
@@ -123,7 +132,27 @@ class Cornucopia(Section):
             ) for w in generate_unique_weapons(random.randint(3,5))
         ]
 
-        return player.set_prompt(Prompt('Which weapon do you pick?', responses))
+        return player.create_prompt('Which weapon do you pick?', responses)
+
+    def generate_choose_target_prompt(self, player):
+        def attack(p):
+            def inner():
+                battle = self.game.start_battle(player, p)
+                return ActionResponse(
+                    f'You started a battle with {p.name}',
+                    battle = battle
+                )
+            return inner
+
+        responses = [
+            Response(
+                p.name, 
+                emoji="💀",
+                action=attack(p), 
+            ) for p in self.cornucopia if p.id != player.id
+        ]
+        return player.create_prompt('Who do you attack?', responses)
+
 
 class Plains(Section):
     id = 6

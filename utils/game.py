@@ -1,7 +1,7 @@
 import asyncio
 import discord
 
-from engine import GameEngine, Prompt
+from engine import GameEngine, Prompt, Battle
 
 class Game:
     """The Class that manages interactions with the Bot"""
@@ -93,10 +93,14 @@ class Game:
 
     async def end_day(self):
         embed = discord.Embed(title=f'Day {self.engine.current_day.date} ends', color=discord.Color.red())
-        embed.description = "Fallen Tributes:\n"
-        embed.description += "\n".join(
-            [f"<@{p.id}>," for p in self.engine.current_day.killed]
-        )
+        if self.engine.current_day.killed:
+            embed.description = "Fallen Tributes:\n"
+            embed.description += "\n".join(
+                [f"<@{p.id}>," for p in self.engine.current_day.killed]
+            )
+        else:
+            embed.description = "No one died today, but will it be the same tomorrow?"
+
         self.engine.end_day()
         await self.ctx.send(embed=embed)
 
@@ -166,6 +170,9 @@ class Game:
                 color=result.public.color or discord.Color.random()
             )
             await self.ctx.send(embed=embed)
+
+        if result.battle:
+            await self.start_battle(result.battle)
         
         if result.followup:
             # if result.followup.delay:
@@ -180,6 +187,9 @@ class Game:
             )
             
         # TODO
+
+    async def start_battle(self, battle: Battle):
+        await self.ctx.send(f'Battle {battle.player1} {battle.player2}!!')
 
 class StartButton(discord.ui.View):
     def __init__(self, game):

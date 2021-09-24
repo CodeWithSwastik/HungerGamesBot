@@ -1,6 +1,7 @@
 import random
 
 from .player import Player
+from .battle import Battle
 from .arena import Arena
 
 class GameEngine:
@@ -59,6 +60,9 @@ class GameEngine:
         if hasattr(self, 'on_player_death'):
             self.on_player_death(player, reason)
         return reason
+
+    def start_battle(self, player1, player2):
+        return Battle(player1, player2)
 
 class Day:
     def __init__(self, date):
