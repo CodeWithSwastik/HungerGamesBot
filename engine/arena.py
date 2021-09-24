@@ -1,5 +1,6 @@
 import random
 from .prompts import Prompt, Response, ActionResponse, Message
+from .weapon import Weapon, generate_unique_weapons
 
 class Arena:
     def __init__(self, game):
@@ -108,17 +109,18 @@ class Cornucopia(Section):
         return Prompt('Do you enter the Cornucopia?', responses)
 
     def generate_weapon_prompt(self, player):
+        def give_weapon(weapon):
+            def inner():
+                player.weapons.append(weapon)
+                return ActionResponse(f'You took the {weapon.name}')
+            return inner
+
         responses = [
             Response(
-                'Dagger', 
-                emoji='🗡',
-                action=lambda: ActionResponse('ok'), 
-            ), 
-            Response(
-                'Your mom', 
-                emoji='👧',
-                action=lambda: ActionResponse('lmao'), 
-            )
+                w.name, 
+                emoji=w.emoji,
+                action=give_weapon(w), 
+            ) for w in generate_unique_weapons(random.randint(3,5))
         ]
 
         return player.set_prompt(Prompt('Which weapon do you pick?', responses))
