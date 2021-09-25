@@ -46,6 +46,11 @@ weapons = {
     "power": (30, 45),
     "accuracy": 75,
   },
+  "Sickle": {
+    "emoji": "🪓",
+    "power": (50, 65),
+    "accuracy": 55,
+  },
   "Spear": {
     "emoji": "🗡",
     "power": (20, 45),
@@ -71,27 +76,21 @@ weapons = {
 
 
 class Weapon:
-    def __init__(self, name, emoji, level=1, accuracy = None, power = None):
+    def __init__(self, name, emoji, accuracy = None, power = None):
         self.name = name
         self.emoji = emoji
-        self.level = level
         self.accuracy = accuracy or Weapon.get_accuracy(self.name, 60) # 0-100%
         self.power = power or Weapon.get_power(self.name, 60)
 
-    def upgrade(self):
-        self.level += 1
-        self.power *= self.level
-        self.power += random.randrange(-10, 10)
-
     @classmethod
-    def from_name(cls, name, level=1):
+    def from_name(cls, name):
         weapon = weapons[name]
-        return Weapon(name, weapon['emoji'], level)
+        return Weapon(name, weapon['emoji'])
 
     @classmethod
-    def random(cls, level=1):
+    def random(cls):
         weapon = random.choice(list(weapons.keys()))
-        return Weapon.from_name(weapon, level)
+        return Weapon.from_name(weapon)
 
     @staticmethod
     def get_power(weapon_name, default = None):
@@ -108,13 +107,15 @@ class Weapon:
         return weapon['accuracy']
 
     def __repr__(self):
-        return f'<Weapon {self.name}: Level {self.level} | Power {self.power}>'
+        return f'<Weapon {self.name}: Power {self.power}>'
 
     def __str__(self):
         return self.name
 
 def generate_unique_weapons(n=1):
+    e = list(weapons.keys())
+    random.shuffle(e)
     return [
         Weapon.from_name(w) for w in
-        random.choices(list(weapons.keys()), k=n)
+        e[:n]
     ]
