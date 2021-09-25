@@ -117,8 +117,8 @@ class Forest(Section):
 class Cornucopia(Section):
     id = 5
     neighbours = [2, 4, 8, 6]
-    thirst = 1
-    hunger = 1
+    thirst = 2
+    hunger = 2
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,26 +145,36 @@ class Cornucopia(Section):
 
         def run():
             r = random.randint(1, 100)
-            if r > 30:
+            if r > 50:
+                response = ActionResponse(
+                    'You ran away from the cornucopia. What do you do next?', 
+                    public=Message(f'{player.name} chooses to run away from the Cornucopia.'),
+                    followup=self.generic_prompt(player),
+                )
+            elif r > 20:
                 response = ActionResponse(
                     'You ran away from the cornucopia. On your way you manage to get hold of a bag of weapons.', 
                     public=Message(f'{player.name} chooses to run away from the Cornucopia.'),
                     followup=self.weapon_prompt_run(player),
                 )
-            elif r > 25: # 5% chance
+            elif r > 5: 
+                self._cornucopia.append(player)
+                followup=None
+                if len(self.cornucopia) > 1:
+                    followup=self.generate_choose_target_prompt(player)
+                player.health -= 15
+                response = ActionResponse(
+                    "You try to ran away but an arrow hits your leg and you can't run away. You'll need to fight to survive.", 
+                    public=Message(f"{player.name} tries to run away but gets injured."),
+                    followup=followup
+                )
+                
+            else:
                 self.game.kill(player, 'stepped on a landmine')
                 response = ActionResponse(
                     'You try to ran away but step on a landmine and die.', 
-                    public=Message(f'{player.name} tries to run away but steps on a landmine and dies.')
-                )
-            else:
-                player.health -= 25
-                response = ActionResponse(
-                    "You try to ran away but an arrow hits your leg and you can't run away. You'll need to fight to survive.", 
-                    public=Message(f"{player.name} tries to run away but gets injured.")
-                )
-                self._cornucopia.append(player)
-                player.finished_responding = True                  
+                    public=Message(f'{player.name} tries to run away but steps on a landmine and dies.'),
+                )                  
             return response
 
         responses = [
@@ -213,13 +223,22 @@ class Cornucopia(Section):
             def inner():
                 if player.in_battle:
                     return ActionResponse(
-                        f'You are already in battle!!',
-                    )                   
+                        f'You are already in a battle!!',
+                    )         
+                if player.dead:
+                    return ActionResponse(
+                        f'You are dead!',
+                    )                             
                 if p.in_battle:
                     return ActionResponse(
                         f'{p} is already in a battle!!',
                         followup=self.generate_choose_target_prompt(player)
                     )              
+                if p.dead:
+                    return ActionResponse(
+                        f'{p} is already dead!',
+                        followup=self.generate_choose_target_prompt(player)
+                    ) 
 
                 battle = self.game.start_battle(player, p)
                 player.finished_responding = True

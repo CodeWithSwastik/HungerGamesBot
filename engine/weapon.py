@@ -11,6 +11,11 @@ weapons = {
     "power": (40, 50),
     "accuracy": 40,
   },
+  "Blowgun": {
+    "emoji": "🌬",
+    "power": (20, 40),
+    "accuracy": 65,
+  },
   "Bow and arrow": {
     "emoji": "🏹",
     "power": (30, 70),
