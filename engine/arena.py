@@ -45,6 +45,21 @@ class Section:
             self.game.arena.move_player(player, section)
             return ActionResponse(f'You moved to {section}')
 
+        def food():
+            if self.hunger > random.uniform(0, 5):
+                return ActionResponse("You didn't find any food :/")
+            else:
+                player.hunger = 50 if player.hunger > 50 else 0
+                return ActionResponse("You found some food")
+
+        def water():
+            if self.thirst > random.uniform(0, 5):
+                return ActionResponse("You didn't find any water")
+            else:
+                player.thirst = 50 if player.hunger > 50 else 0
+                return ActionResponse("You found some water")
+            
+
         responses = [
             Response(
                 f'Move to {section}', 
@@ -54,18 +69,18 @@ class Section:
             Response(
                 'Search for food', 
                 emoji='🍖',
-                action=lambda: ActionResponse(f'You didn\'t find any food :/'), 
+                action=food, 
             ),
             Response(
                 'Search for water', 
                 emoji='🌊',
-                action=lambda: ActionResponse(f'You didn\'t find any water :/'), 
+                action=water, 
             ),
             Response(
                 'Hunt Tributes', 
                 emoji='🩸',
                 action=lambda: ActionResponse(f'You didn\'t find anyone :/'), 
-            )
+            ),
         ]
         
         return player.create_prompt(f'What will you do?', responses)
@@ -111,8 +126,9 @@ class Cornucopia(Section):
         ]
 
     def get_prompt(self, player) -> Prompt:
-        if player.responded:
-            return 
+        if self.game.current_day.date > 1:
+           return self.generic_prompt(player)
+
         def enter():
             resp = ActionResponse(
                 f'You enter the Cornucopia. You come across some weapons and food.', 

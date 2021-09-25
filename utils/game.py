@@ -79,7 +79,7 @@ class Game:
             embed=embed, 
             allowed_mentions=discord.AllowedMentions(roles=True)
         )
-        #await asyncio.sleep(30)
+        await asyncio.sleep(5)
         
         for day in range(1,10):
             await self.start_day(day)
@@ -171,7 +171,7 @@ class Game:
         for _ in range(self.engine.current_day.length):
             if not self.engine.progress_day(60): 
                 break # day ended early since everyone responded
-            await asyncio.sleep(15)
+            await asyncio.sleep(7)
 
         await self.end_day()
 
