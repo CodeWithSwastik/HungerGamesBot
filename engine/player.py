@@ -68,12 +68,12 @@ class Player:
     @property
     def hunger_rate(self) -> int:
         rate = self.strength/100
-        return round(rate)
+        return round(rate*self.location.hunger*random.uniform(1,2))
 
     @property
     def thirst_rate(self) -> int:
         rate = self.strength/100
-        return round(rate)
+        return round(rate*self.location.thirst*random.uniform(2,4))
 
     def update_hunger_and_thirst(self):
         self.hunger += self.hunger_rate
@@ -137,6 +137,7 @@ class Player:
 
     @property
     def body_parts(self):
+        # TODO: OOP smh
         return [
             # name, emoji, size (1-10), vulnerability (1-10)
             ('Head', '👨‍🦱',  4, 8), 
