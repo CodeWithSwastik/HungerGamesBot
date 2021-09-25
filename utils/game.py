@@ -142,6 +142,31 @@ class Game:
         embed.set_thumbnail(url=member.display_avatar.url)        
         return embed
 
+    def create_battle_embed(self, player, battle: Battle):
+        embed = discord.Embed(color=discord.Color.yellow())
+        other = battle.get_other(player)
+
+        e = f'Health: {player.health} ❤ \n'
+        e += f'Strength: {player.strength} 💪\n'
+        e += f'Weapon: {player.primary_weapon} {player.primary_weapon.emoji}\n'
+
+        embed.add_field(name='Your stats', value=e)
+
+        weapon = other.primary_weapon
+    
+        e = f'Health: {other.health} ❤ \n'
+        e += f'Strength: {other.strength} 💪\n'
+
+        if weapon:
+            e += f'Weapon: {weapon} {weapon.emoji}\n'
+        else:
+            e += f'Weapon: ???\n'
+            
+        embed.add_field(name=f'{other}\'s stats', value=e)
+
+
+        return embed
+
     async def progress_day(self):
         for _ in range(self.engine.current_day.length):
             if not self.engine.progress_day(60): 
@@ -230,10 +255,10 @@ class Game:
         if player.primary_weapon is None:
             player.primary_weapon = player.usable_weapons[response]
             await interaction.response.edit_message(
-                content=f'ok boi you picked {player.primary_weapon}',
+                content=f'You picked your {player.primary_weapon}',
                 view=None
             )
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
             
             await interaction.edit_original_message(
                 content=f'Where do you attack {other}?',
@@ -250,11 +275,13 @@ class Game:
             elif damage_dealt is None:
                 await interaction.response.edit_message(
                     content=f'You missed the shot!',
+                    embed=self.create_battle_embed(player, battle),
                     view=self.create_view(SelectOption, 'Where do you attack next?', parts, battle=True)
                 )
             else:
                 await interaction.response.edit_message(
                     content=f'Your hit dealt {damage_dealt} damage!',
+                    embed=self.create_battle_embed(player, battle),
                     view=self.create_view(SelectOption, 'Where do you attack next?', parts, battle=True)
                 )        
 
@@ -264,6 +291,7 @@ class Game:
         return view          
 
 class StartButton(discord.ui.View):
+    # TODO: bug. This button doesn't die when day ends?
     def __init__(self, game):
         super().__init__()
         self.game = game
@@ -326,7 +354,7 @@ class BattleButton(discord.ui.View):
         weapons = [(w.name, w.emoji) for w in player.usable_weapons]
 
         view = SelectOption(self.game, 'Select a weapon', weapons, battle=True)
-        self.active_views.append(view)
+        self.game.active_views.append(view)
         await interaction.response.send_message(
             f"Which weapon will you pick to fight in this battle?",
             view=view,

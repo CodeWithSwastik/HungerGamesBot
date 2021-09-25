@@ -7,7 +7,7 @@ class CustomList(list):
     def __repr__(self):
         if not self:
             return 'None'
-        return ','.join([str(i) for i in self])
+        return ', '.join([str(i) for i in self])
 
 class Player:
     def __init__(self, name, id):
@@ -78,6 +78,10 @@ class Player:
     def update_hunger_and_thirst(self):
         self.hunger += self.hunger_rate
         self.thirst += self.thirst_rate
+
+        #health regen
+        if not self.in_battle and self.health < 100:
+            self.health += 1
 
     def __repr__(self):
         return f'<Player: {self.name} {self.id}>'
