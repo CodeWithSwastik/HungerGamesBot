@@ -236,10 +236,12 @@ class Game:
             title='Battle ⚔', description=f'{battle.player1} and {battle.player2} get into a fierce battle!'
         )
         embed.set_footer(text='The participants of this battle can press the button to fight')
-        await self.ctx.send(
+        msg = await self.ctx.send(
             ' '.join(f'<@{i}>' for i in battle.participants), 
+            embed=embed,
             view=self.create_view(BattleButton, battle)
         )
+        battle._msg = msg
 
     async def handle_battle_response(self, interaction, response):
         player = self.get_player(interaction.user)

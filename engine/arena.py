@@ -41,11 +41,15 @@ class Section:
         
         section = self.game.arena[random.choice(self.neighbours)]
 
-        def move():                
+        def move():   
+            player.finished_responding = True            
+             
             self.game.arena.move_player(player, section)
             return ActionResponse(f'You moved to {section}')
 
         def food():
+            player.finished_responding = True            
+
             if self.hunger > random.uniform(0, 5):
                 return ActionResponse("You didn't find any food :/")
             else:
@@ -53,12 +57,13 @@ class Section:
                 return ActionResponse("You found some food")
 
         def water():
+            player.finished_responding = True            
+
             if self.thirst > random.uniform(0, 5):
                 return ActionResponse("You didn't find any water")
             else:
                 player.thirst = 50 if player.hunger > 50 else 0
                 return ActionResponse("You found some water")
-            
 
         responses = [
             Response(
@@ -136,7 +141,6 @@ class Cornucopia(Section):
                 followup=self.generate_weapon_prompt(player)
             )
             self._cornucopia.append(player)
-            #player.finished_responding = True
             return resp
 
         def run():
@@ -160,7 +164,7 @@ class Cornucopia(Section):
                     public=Message(f"{player.name} tries to run away but gets injured.")
                 )
                 self._cornucopia.append(player)
-            player.finished_responding = True                   
+                player.finished_responding = True                  
             return response
 
         responses = [
@@ -218,7 +222,7 @@ class Cornucopia(Section):
                     )              
 
                 battle = self.game.start_battle(player, p)
-
+                player.finished_responding = True
                 return ActionResponse(
                     f'You started a battle with {p.name}',
                     battle = battle

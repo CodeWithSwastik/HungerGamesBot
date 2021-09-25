@@ -38,6 +38,9 @@ class GameEngine:
         if all([p.finished_responding for p in self.alive_players]):
             self.end_day()        
             return False
+        if len(self.alive_players) <= 1:
+            self.end_day()        
+            return False            
 
         for p in self.alive_players:
             p.update_hunger_and_thirst()
