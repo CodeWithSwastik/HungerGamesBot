@@ -65,6 +65,11 @@ weapons = {
     "emoji": "✂",
     "power": (30, 50),
     "accuracy": 65,
+  },
+  "Your mom": {
+    "emoji": "👧",
+    "power": (80, 90),
+    "accuracy": 10,
   }
 }
 
