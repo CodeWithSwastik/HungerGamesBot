@@ -108,7 +108,8 @@ class Section:
             ),                        
         ]
 
-        random.shuffle(responses)[:6]
+        random.shuffle(responses)
+        responses = responses[:6]
         
         return player.create_prompt(f'What will you do?', responses)
 
@@ -154,7 +155,7 @@ class Cornucopia(Section):
 
     def get_prompt(self, player) -> Prompt:
         if self.game.current_day.date > 1:
-           return self.generic_prompt(player)
+           return super().generic_prompt(player)
 
         def enter():
             resp = ActionResponse(
