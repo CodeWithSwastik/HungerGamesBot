@@ -68,12 +68,12 @@ class Player:
     @property
     def hunger_rate(self) -> int:
         rate = self.strength/100
-        return round(rate*self.location.hunger*random.uniform(1,2))
+        return round(rate*self.location.hunger*random.uniform(0.5,1))
 
     @property
     def thirst_rate(self) -> int:
         rate = self.strength/100
-        return round(rate*self.location.thirst*random.uniform(2,4))
+        return round(rate*self.location.thirst*random.uniform(0.75,1.5))
 
     def update_hunger_and_thirst(self):
         self.hunger += self.hunger_rate

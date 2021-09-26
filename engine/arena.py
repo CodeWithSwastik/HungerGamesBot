@@ -7,7 +7,7 @@ class Arena:
         self.sections = [
             Snow(game), Mountains(game), Savanah(game),
             Forest(game), Cornucopia(game), Plains(game),
-            RainForest(game), Grassland(game), Desert(game)
+            Rainforest(game), Grassland(game), Desert(game)
         ]
         
 
@@ -86,7 +86,29 @@ class Section:
                 emoji='🩸',
                 action=lambda: ActionResponse(f'You didn\'t find anyone :/'), 
             ),
+            Response(
+                'Do Strength Training',
+                emoji='💪',
+                action=lambda: ActionResponse(f'Your strength increased by 69'), 
+            ),
+            Response(
+                'Upgrade your weapons',
+                emoji='🏹',
+                action=lambda: ActionResponse(f'Your weapons power increased by 69'), 
+            ),
+            Response(
+                'Sabotage other tributes',
+                emoji='💀',
+                action=lambda: ActionResponse(f'You failed'), 
+            ),
+            Response(
+                'Attempt to escape the arena',
+                emoji='🚧',
+                action=lambda: ActionResponse(f'You died trying to escape.'), 
+            ),                        
         ]
+
+        random.shuffle(responses)[:6]
         
         return player.create_prompt(f'What will you do?', responses)
 
@@ -127,7 +149,7 @@ class Cornucopia(Section):
     @property
     def cornucopia(self):
         return [
-            m for m in self._cornucopia if m.alive and m in self.players
+            m for m in self.players if m.alive
         ]
 
     def get_prompt(self, player) -> Prompt:
@@ -170,10 +192,12 @@ class Cornucopia(Section):
                 )
                 
             else:
-                self.game.kill(player, 'stepped on a landmine')
+                reason = random.choice(['stepped on a landmine', 'fell into a pit'])
+                reason += ' and died.'
+                self.game.kill(player, reason)
                 response = ActionResponse(
-                    'You try to ran away but step on a landmine and die.', 
-                    public=Message(f'{player.name} tries to run away but steps on a landmine and dies.'),
+                    f'You tried to run away but {reason}', 
+                    #public=Message(f'{player.name} tries to run away but steps on a landmine and dies.'),
                 )                  
             return response
 
@@ -255,6 +279,9 @@ class Cornucopia(Section):
                 action=attack(p), 
             ) for p in self.cornucopia if p.id != player.id and not p.in_battle
         ]
+        if len(responses) > 5:
+            random.shuffle(responses)
+            responses = responses[:5]
         return player.create_prompt('Who do you attack?', responses)
 
     def weapon_prompt_run(self, player):
@@ -278,13 +305,35 @@ class Cornucopia(Section):
 
         return player.create_prompt('Which weapon do you pick?', responses)
 
+    def generic_prompt(self, player):
+        random.shuffle(self.neighbours)
+        sections = [self.game.arena[m] for m in self.neighbours[:3]]
+
+        def move(section):   
+            def inner():
+                player.finished_responding = True            
+                
+                self.game.arena.move_player(player, section)
+                return ActionResponse(f'You moved to {section}')
+            return inner
+
+        responses = [
+            Response(
+                f'{s}', 
+                emoji='🗺',
+                action=move(s), 
+            ) for s in sections
+        ]
+        
+        return player.create_prompt(f'Where will you go?', responses)
+
 class Plains(Section):
     id = 6
     neighbours = [3, 5, 9]
     thirst = 1
     hunger = 2
 
-class RainForest(Section):
+class Rainforest(Section):
     id = 7
     neighbours = [4, 8]
     thirst = 1

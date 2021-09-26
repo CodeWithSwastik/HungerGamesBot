@@ -35,7 +35,10 @@ class GameEngine:
 
     def progress_day(self, time=60):
         self.current_day.time += time
-        if all([p.finished_responding for p in self.alive_players]):
+        if (
+            all([p.finished_responding for p in self.alive_players])
+            and self.current_day.hours > 10
+        ):
             self.end_day()        
             return False
         if len(self.alive_players) <= 1:
@@ -64,6 +67,8 @@ class GameEngine:
         return response.action()
 
     def kill(self, player, reason):
+        if isinstance(player, int):
+            player = self.players[player]
         player.kill(reason)
         self.current_day.killed.append(player)
         if hasattr(self, 'on_player_death'):
@@ -75,6 +80,10 @@ class GameEngine:
             return False
         return Battle(self, player1, player2)
 
+    def force_stop(self, reason=None):
+        for player in self.alive_players:
+            self.kill(player, reason or 'died unexpectedly')
+
 class Day:
     def __init__(self, date):
         self.date = date
@@ -82,13 +91,16 @@ class Day:
         self.length = random.randint(13, 15) # 9pm/10pm/11pm
         self.killed = [] # People that were killed
 
+    @property
+    def hours(self):
+        return self.time // 60
 
     def __repr__(self):
         if self.time < 4*60:
-            return f'{8 + self.time//60} am (morning)'
+            return f'{8 + self.hours} am (morning)'
         elif self.time < 8*60:
-            return f'{(-4 + self.time//60) or "12:30"} pm (afternoon)'
+            return f'{(-4 + self.hours) or "12:30"} pm (afternoon)'
         elif self.time < 12*60:
-            return f'{-4 + self.time//60} pm (evening)'
+            return f'{-4 + self.hours} pm (evening)'
         else:
-            return f'{-4 + self.time//60} pm (night)'
+            return f'{-4 + self.hours} pm (night)'

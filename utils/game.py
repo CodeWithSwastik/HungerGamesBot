@@ -241,7 +241,7 @@ class Game:
             embed=embed,
             view=self.create_view(BattleButton, battle)
         )
-        battle._msg = msg
+        battle._msg = msg # TODO: maybe?
 
     async def handle_battle_response(self, interaction, response):
         player = self.get_player(interaction.user)
