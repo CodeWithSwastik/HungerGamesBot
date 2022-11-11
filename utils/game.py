@@ -262,7 +262,7 @@ class Game:
             )
             await asyncio.sleep(1)
             
-            await interaction.edit_original_message(
+            await interaction.edit_original_response(
                 content=f'Where do you attack {other}?',
                 view=self.create_view(SelectOption, 'Where do you attack?', parts, battle=True)
             )
@@ -325,6 +325,7 @@ class SelectOption(discord.ui.View):
         super().__init__()
         final_options = []
         for i, option in enumerate(options):
+            i = str(i)
             if isinstance(option, str):
                 final_options.append(discord.SelectOption(label=option, value=i))
             else:

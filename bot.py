@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.app import option
+from discord.commands import option
 
 from utils import *
 
@@ -16,7 +16,7 @@ async def on_application_command_error(ctx, error):
         await ctx.reply(error)
     elif isinstance(error, commands.MissingPermissions):
         await ctx.reply(error)
-    elif type(error) in (commands.CheckFailure, discord.app.errors.CheckFailure):
+    elif type(error) in (commands.CheckFailure, discord.commands.errors.CheckFailure):
         pass
     else:
         await ctx.reply(f'An unknown error occurred: {error}')
@@ -108,7 +108,7 @@ async def stats(ctx):
 async def source(ctx):
     await ctx.send('https://github.com/CodeWithSwastik/HungerGamesBot')
 
-tribute = bot.command_group('tribute', 'Commands related to Tributes')
+tribute = bot.create_group('tribute', 'Commands related to Tributes')
 
 @tribute.command(name='list')
 @game_exists()

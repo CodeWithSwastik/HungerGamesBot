@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.app import ApplicationContext
+from discord.commands import ApplicationContext
 
 from .game import Game
 
